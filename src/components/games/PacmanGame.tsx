@@ -21,8 +21,8 @@ const ROWS = MAZE_ROWS.length;
 const CELL = 24;
 const WIDTH = COLS * CELL;
 const HEIGHT = ROWS * CELL;
-const PLAYER_INTERVAL = 170;
-const GHOST_INTERVAL = 340;
+const PLAYER_INTERVAL = 200;
+const GHOST_INTERVAL = 400;
 
 type Point = { x: number; y: number };
 

@@ -14,6 +14,38 @@ const PLAYER_X = 60;
 
 type Obstacle = { x: number; width: number; height: number };
 
+function randomBetween(min: number, max: number) {
+  return min + Math.random() * (max - min);
+}
+
+// Obstacle "groups" so difficulty reads clearly: small ones a short tap
+// clears, tall ones only clear if you hold jump through most of the
+// ~0.36s ascent (short-hop apex is ~24px, full-hold apex is ~117px),
+// and paired ones sit side by side so there's no gap to land in between.
+function createObstacleGroup(): Obstacle[] {
+  const roll = Math.random();
+
+  if (roll < 0.3) {
+    // small — short-hop clearable
+    return [{ x: 0, width: randomBetween(14, 20), height: randomBetween(12, 20) }];
+  }
+  if (roll < 0.55) {
+    // tall — needs a full held jump
+    return [{ x: 0, width: randomBetween(18, 24), height: randomBetween(55, 80) }];
+  }
+  if (roll < 0.8) {
+    // paired side by side
+    const firstWidth = randomBetween(14, 18);
+    const gap = randomBetween(2, 8);
+    return [
+      { x: 0, width: firstWidth, height: randomBetween(16, 28) },
+      { x: firstWidth + gap, width: randomBetween(14, 18), height: randomBetween(16, 28) },
+    ];
+  }
+  // medium
+  return [{ x: 0, width: randomBetween(16, 22), height: randomBetween(26, 40) }];
+}
+
 function initialState() {
   return {
     playerY: GROUND_Y - PLAYER_SIZE,
@@ -113,9 +145,10 @@ export default function DinoGame() {
 
         s.spawnTimer -= dt;
         if (s.spawnTimer <= 0) {
-          s.spawnTimer = 0.9 + Math.random() * 1.1;
-          const h = 20 + Math.random() * 20;
-          s.obstacles.push({ x: WIDTH + 10, width: 14 + Math.random() * 10, height: h });
+          s.spawnTimer = 1.1 + Math.random() * 1.3;
+          createObstacleGroup().forEach((o) => {
+            s.obstacles.push({ ...o, x: WIDTH + 10 + o.x });
+          });
         }
 
         s.obstacles.forEach((o) => (o.x -= s.speed * dt));
