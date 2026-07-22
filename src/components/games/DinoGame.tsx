@@ -8,6 +8,7 @@ const HEIGHT = 200;
 const GROUND_Y = 160;
 const GRAVITY = 1800;
 const JUMP_VELOCITY = -650;
+const JUMP_CUT_MULTIPLIER = 0.45;
 const PLAYER_SIZE = 24;
 const PLAYER_X = 60;
 
@@ -41,7 +42,7 @@ export default function DinoGame() {
     setGameOver(false);
   }, []);
 
-  const jump = useCallback(() => {
+  const startJump = useCallback(() => {
     const s = stateRef.current;
     if (s.over) {
       reset();
@@ -52,6 +53,13 @@ export default function DinoGame() {
       s.grounded = false;
     }
   }, [reset]);
+
+  const endJump = useCallback(() => {
+    const s = stateRef.current;
+    if (!s.over && s.velocity < 0) {
+      s.velocity *= JUMP_CUT_MULTIPLIER;
+    }
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -67,13 +75,20 @@ export default function DinoGame() {
     canvas.style.height = HEIGHT + "px";
     context.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    function handleKey(e: KeyboardEvent) {
+    function handleKeyDown(e: KeyboardEvent) {
       if (e.code === "Space" || e.code === "ArrowUp") {
         e.preventDefault();
-        jump();
+        startJump();
       }
     }
-    window.addEventListener("keydown", handleKey);
+    function handleKeyUp(e: KeyboardEvent) {
+      if (e.code === "Space" || e.code === "ArrowUp") {
+        e.preventDefault();
+        endJump();
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
 
     let raf = 0;
     let last = performance.now();
@@ -144,10 +159,11 @@ export default function DinoGame() {
     raf = requestAnimationFrame(tick);
 
     return () => {
-      window.removeEventListener("keydown", handleKey);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
       cancelAnimationFrame(raf);
     };
-  }, [colors, jump]);
+  }, [colors, startJump, endJump]);
 
   return (
     <div className="flex flex-col items-center gap-3">
@@ -155,7 +171,13 @@ export default function DinoGame() {
         <span>SCORE {score}</span>
         <span>BEST {best}</span>
       </div>
-      <div className="relative touch-none" onPointerDown={() => jump()}>
+      <div
+        className="relative touch-none"
+        onPointerDown={() => startJump()}
+        onPointerUp={() => endJump()}
+        onPointerLeave={() => endJump()}
+        onPointerCancel={() => endJump()}
+      >
         <canvas ref={canvasRef} className="max-w-full border-2 border-line" />
         {gameOver && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-bg/80 font-mono text-sm">

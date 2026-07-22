@@ -22,7 +22,7 @@ const CELL = 24;
 const WIDTH = COLS * CELL;
 const HEIGHT = ROWS * CELL;
 const PLAYER_INTERVAL = 170;
-const GHOST_INTERVAL = 220;
+const GHOST_INTERVAL = 340;
 
 type Point = { x: number; y: number };
 
