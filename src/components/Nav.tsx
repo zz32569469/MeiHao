@@ -9,7 +9,6 @@ const links = [
   { href: "/", label: "首頁" },
   { href: "/about", label: "自我介紹" },
   { href: "/projects", label: "作品集" },
-  { href: "/blog", label: "開發紀錄" },
 ];
 
 export default function Nav() {

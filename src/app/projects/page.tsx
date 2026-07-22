@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import PlumBlossomMark from "@/components/PlumBlossomMark";
 
 type Project = {
@@ -35,13 +34,7 @@ export default function Projects() {
         <div className="flex flex-col items-center gap-3 border-2 border-dashed border-line px-6 py-16 text-center">
           <PlumBlossomMark className="opacity-60" />
           <p className="font-serif text-lg font-bold text-ink">作品還在路上</p>
-          <p className="max-w-sm text-sm text-muted">
-            目前還沒有能公開的作品。先去{" "}
-            <Link href="/blog" className="text-accent hover:text-accent-strong">
-              開發紀錄
-            </Link>{" "}
-            看看在做什麼。
-          </p>
+          <p className="max-w-sm text-sm text-muted">目前還沒有能公開的作品，之後會陸續放上來。</p>
         </div>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2">
