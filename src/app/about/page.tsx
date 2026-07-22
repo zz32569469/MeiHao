@@ -1,5 +1,3 @@
-const skills = ["C#", "Unity", "JavaScript / TypeScript", "React / Next.js", "Git"];
-
 const experience = [
   {
     period: "2024 - 現在",
@@ -17,22 +15,6 @@ export default function About() {
           在這裡寫一段自我介紹：背景、興趣、目前在做的事、想找的機會等等。
           兩到三句話即可，不用寫成流水帳。
         </p>
-      </div>
-
-      <div>
-        <h2 className="font-mono text-xs font-bold tracking-wide text-accent uppercase">
-          技能
-        </h2>
-        <ul className="mt-3 flex flex-wrap gap-2">
-          {skills.map((skill) => (
-            <li
-              key={skill}
-              className="border-2 border-line bg-surface px-3 py-1 text-sm text-ink"
-            >
-              {skill}
-            </li>
-          ))}
-        </ul>
       </div>
 
       <div>
