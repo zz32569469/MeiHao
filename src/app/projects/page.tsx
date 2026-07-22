@@ -16,7 +16,7 @@ const projects = [
 export default function Projects() {
   return (
     <section className="mx-auto flex max-w-3xl flex-col gap-8 px-6 py-24">
-      <h1 className="text-3xl font-bold tracking-tight">作品集</h1>
+      <h1 className="font-serif text-3xl font-bold tracking-wide">作品集</h1>
       <div className="grid gap-6 sm:grid-cols-2">
         {projects.map((project) => (
           <a
@@ -24,15 +24,15 @@ export default function Projects() {
             href={project.link}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex flex-col gap-3 rounded-lg border border-neutral-800 p-5 hover:border-neutral-600"
+            className="flex flex-col gap-3 border-2 border-line bg-surface p-5 hover:border-accent"
           >
-            <h2 className="font-semibold">{project.title}</h2>
-            <p className="text-sm text-neutral-300">{project.description}</p>
+            <h2 className="font-serif font-bold text-ink">{project.title}</h2>
+            <p className="text-sm text-muted">{project.description}</p>
             <div className="flex flex-wrap gap-2">
               {project.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-full bg-neutral-800 px-2 py-0.5 text-xs text-neutral-300"
+                  className="border border-line font-mono text-xs tracking-wide text-muted uppercase px-2 py-0.5"
                 >
                   {tag}
                 </span>
