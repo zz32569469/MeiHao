@@ -1,57 +1,14 @@
-type Role = "core" | "rim" | "main";
+import { buildBlossomCells, type BlossomRole } from "@/lib/plumBlossomCells";
 
-const BASE_RADIUS = 5.2;
-const AMPLITUDE = 1.4;
-const CORE_RADIUS = 1.4;
 const UNIT = 3;
 
-function isFilled(dx: number, dy: number): boolean {
-  const r = Math.sqrt(dx * dx + dy * dy);
-  const theta = Math.atan2(-dy, dx);
-  const radius = BASE_RADIUS + AMPLITUDE * Math.cos(5 * (theta - Math.PI / 2));
-  return r <= radius;
-}
-
-function buildCells(): [number, number, Role][] {
-  const range = Math.ceil(BASE_RADIUS + AMPLITUDE) + 1;
-  const filled = new Set<string>();
-
-  for (let dx = -range; dx <= range; dx++) {
-    for (let dy = -range; dy <= range; dy++) {
-      if (isFilled(dx, dy)) filled.add(`${dx},${dy}`);
-    }
-  }
-
-  const cells: [number, number, Role][] = [];
-  filled.forEach((key) => {
-    const [dx, dy] = key.split(",").map(Number);
-    const r = Math.sqrt(dx * dx + dy * dy);
-    let role: Role;
-    if (r <= CORE_RADIUS) {
-      role = "core";
-    } else {
-      const neighbors: [number, number][] = [
-        [dx + 1, dy],
-        [dx - 1, dy],
-        [dx, dy + 1],
-        [dx, dy - 1],
-      ];
-      const isRim = neighbors.some(([nx, ny]) => !filled.has(`${nx},${ny}`));
-      role = isRim ? "rim" : "main";
-    }
-    cells.push([dx, dy, role]);
-  });
-
-  return cells;
-}
-
-const ROLE_COLOR: Record<Role, string> = {
+const ROLE_COLOR: Record<BlossomRole, string> = {
   core: "var(--accent-dim)",
   rim: "var(--blossom-dim)",
   main: "var(--blossom)",
 };
 
-const CELLS = buildCells();
+const CELLS = buildBlossomCells();
 const MIN_X = Math.min(...CELLS.map(([x]) => x));
 const MIN_Y = Math.min(...CELLS.map(([, y]) => y));
 const MAX_X = Math.max(...CELLS.map(([x]) => x));

@@ -4,7 +4,7 @@ import Script from "next/script";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import PetalField from "@/components/PetalField";
-import { BASE_PATH } from "@/lib/site-config";
+import { BASE_PATH, SITE_URL } from "@/lib/site-config";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -23,11 +23,30 @@ const notoSerifTC = Noto_Serif_TC({
   subsets: ["latin"],
 });
 
+const title = "陳梅豪 | Personal Site";
+const description = "個人作品集與自我介紹";
+
 export const metadata: Metadata = {
-  title: "陳梅豪 | Personal Site",
-  description: "個人作品集與自我介紹",
+  title,
+  description,
+  metadataBase: new URL(SITE_URL),
   icons: {
     icon: `${BASE_PATH}/icon`,
+  },
+  openGraph: {
+    title,
+    description,
+    url: `${BASE_PATH}/`,
+    siteName: "陳梅豪",
+    images: [`${BASE_PATH}/og`],
+    locale: "zh_TW",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+    images: [`${BASE_PATH}/og`],
   },
 };
 

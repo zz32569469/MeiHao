@@ -3,3 +3,5 @@
 // public/ asset referenced by a plain string path needs this prefix
 // added manually. Keep this in sync with next.config.ts's basePath.
 export const BASE_PATH = "/MeiHao";
+
+export const SITE_URL = "https://zz32569469.github.io";
