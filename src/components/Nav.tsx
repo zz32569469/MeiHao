@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import FlameMark from "./FlameMark";
+import PlumBlossomMark from "./PlumBlossomMark";
 import ThemeToggle from "./ThemeToggle";
 
 const links = [
@@ -18,9 +18,9 @@ export default function Nav() {
   return (
     <header className="border-b-2 border-line bg-bg">
       <nav className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 px-6 py-4">
-        <Link href="/" className="flex items-center gap-3 font-bold tracking-wide">
-          <FlameMark className="mt-[-2px] h-7 w-5" />
-          柚
+        <Link href="/" className="flex items-center gap-2.5 font-bold tracking-wide">
+          <PlumBlossomMark />
+          梅
         </Link>
         <ul className="flex gap-1 text-sm">
           {links.map((link) => {

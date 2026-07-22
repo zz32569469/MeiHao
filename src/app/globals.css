@@ -11,6 +11,8 @@
   --accent-dim: #7a4118;
   --status: #8a3a29;
   --on-accent: #f8f4e8;
+  --blossom: #ab8683;
+  --blossom-dim: #8c6b68;
 }
 
 .dark {
@@ -24,6 +26,8 @@
   --accent-dim: #6b4420;
   --status: #a4432f;
   --on-accent: #16130f;
+  --blossom: #b99490;
+  --blossom-dim: #8f716d;
 }
 
 @theme inline {

@@ -7,7 +7,7 @@ export default function Home() {
         STATUS · 你好，我是
       </span>
       <h1 className="font-serif text-4xl font-bold tracking-wide sm:text-5xl">
-        你的名字
+        陳梅豪
       </h1>
       <p className="max-w-xl text-lg text-muted">
         一句話介紹自己在做什麼，例如：軟體工程師，專注於遊戲開發與互動體驗。

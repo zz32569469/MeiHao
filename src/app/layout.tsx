@@ -22,7 +22,7 @@ const notoSerifTC = Noto_Serif_TC({
 });
 
 export const metadata: Metadata = {
-  title: "柚 | Personal Site",
+  title: "陳梅豪 | Personal Site",
   description: "個人作品集與自我介紹",
 };
 

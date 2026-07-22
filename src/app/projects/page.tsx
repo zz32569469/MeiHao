@@ -1,5 +1,5 @@
 import Image from "next/image";
-import FlameMark from "@/components/FlameMark";
+import PlumBlossomMark from "@/components/PlumBlossomMark";
 
 type Project = {
   title: string;
@@ -61,7 +61,7 @@ export default function Projects() {
               </div>
             ) : (
               <div className="flex aspect-video w-full flex-col items-center justify-center gap-2 border-2 border-dashed border-line text-muted">
-                <FlameMark className="h-7 w-5 opacity-60" />
+                <PlumBlossomMark className="opacity-60" />
                 <span className="font-mono text-[0.65rem] tracking-wide uppercase">
                   封面圖 / GIF
                 </span>
