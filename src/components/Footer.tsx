@@ -2,7 +2,7 @@ import VisitorCounter from "./VisitorCounter";
 
 const links = [
   { label: "EMAIL", href: "mailto:you@example.com" },
-  { label: "GITHUB", href: "https://github.com/your-username" },
+  { label: "GITHUB", href: "https://github.com/zz32569469" },
   { label: "ITCH.IO", href: "https://your-username.itch.io" },
 ];
 
