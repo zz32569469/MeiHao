@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import PlumBlossomMark from "@/components/PlumBlossomMark";
 
 type Project = {
@@ -11,11 +12,28 @@ type Project = {
   itch?: string;
 };
 
-// 還沒有能公開的作品，先留空。要加作品時往這個陣列 push 一筆即可。
-const projects: Project[] = [];
+const projects: Project[] = [
+  {
+    title: "小恐龍",
+    description: "經典無盡跑酷，用 Canvas 刻的，支援鍵盤跟觸控跳躍。",
+    tags: ["Canvas", "TypeScript"],
+    demo: "/projects/dino",
+  },
+  {
+    title: "貪食蛇",
+    description: "20x20 網格版貪食蛇，吃越多長越快，支援方向鍵、WASD 跟觸控 D-pad。",
+    tags: ["Canvas", "TypeScript"],
+    demo: "/projects/snake",
+  },
+  {
+    title: "小精靈",
+    description: "簡化版小精靈，兩隻鬼魂會朝玩家追過來，吃光豆子過關。",
+    tags: ["Canvas", "TypeScript"],
+    demo: "/projects/pacman",
+  },
+];
 
 const linkFields: { key: keyof Project; label: string }[] = [
-  { key: "demo", label: "DEMO" },
   { key: "github", label: "GITHUB" },
   { key: "itch", label: "ITCH.IO" },
 ];
@@ -26,7 +44,8 @@ export default function Projects() {
       <div>
         <h1 className="font-serif text-3xl font-bold tracking-wide">作品集</h1>
         <p className="mt-2 text-sm text-muted">
-          把 <code>image</code> 欄位指到 <code>public/projects/</code> 底下的圖片檔就會換成真的封面圖，沒填會顯示佔位框。
+          還沒有正式專案，先放幾個自己刻的小遊戲。把 <code>image</code> 欄位指到{" "}
+          <code>public/projects/</code> 底下的圖片檔就會換成真的封面圖，沒填會顯示佔位框。
         </p>
       </div>
 
@@ -76,6 +95,14 @@ export default function Projects() {
               </div>
 
               <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 font-mono text-xs tracking-wide">
+                {project.demo ? (
+                  <Link
+                    href={project.demo}
+                    className="text-accent hover:text-accent-strong"
+                  >
+                    [ 遊玩 ]
+                  </Link>
+                ) : null}
                 {linkFields.map(({ key, label }) => {
                   const href = project[key];
                   if (typeof href !== "string") return null;
