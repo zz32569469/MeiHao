@@ -9,6 +9,7 @@ const links = [
   { href: "/", label: "首頁" },
   { href: "/about", label: "自我介紹" },
   { href: "/projects", label: "作品集" },
+  { href: "/blog", label: "開發紀錄" },
 ];
 
 export default function Nav() {
@@ -23,7 +24,8 @@ export default function Nav() {
         </Link>
         <ul className="flex gap-1 text-sm">
           {links.map((link) => {
-            const active = pathname === link.href;
+            const active =
+              link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
             return (
               <li key={link.href}>
                 <Link
