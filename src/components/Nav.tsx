@@ -18,9 +18,8 @@ export default function Nav() {
   return (
     <header className="border-b-2 border-line bg-bg">
       <nav className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 px-6 py-4">
-        <Link href="/" className="flex items-center gap-2.5 font-bold tracking-wide">
+        <Link href="/" aria-label="陳梅豪 - 回首頁" className="flex items-center">
           <PlumBlossomMark />
-          梅
         </Link>
         <ul className="flex gap-1 text-sm">
           {links.map((link) => {
