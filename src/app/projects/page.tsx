@@ -1,6 +1,7 @@
 import Image from "next/image";
 import PlumBlossomMark from "@/components/PlumBlossomMark";
 import GameShowcase from "@/components/games/GameShowcase";
+import { BASE_PATH } from "@/lib/site-config";
 
 type Project = {
   title: string;
@@ -40,7 +41,7 @@ export default function Projects() {
             {project.image ? (
               <div className="relative aspect-video w-full overflow-hidden border-2 border-line">
                 <Image
-                  src={project.image}
+                  src={`${BASE_PATH}${project.image}`}
                   alt={project.title}
                   fill
                   className="object-cover"
