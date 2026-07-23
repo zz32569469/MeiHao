@@ -59,10 +59,10 @@ export default function PetalField() {
       const frameMargin = parseFloat(
         getComputedStyle(document.documentElement).getPropertyValue("--frame-margin"),
       ) || 0;
-      const navEl = document.querySelector("header nav");
-      const navRect = navEl?.getBoundingClientRect();
-      const left = navRect ? navRect.left : (window.innerWidth - 768) / 2;
-      const right = navRect ? navRect.right : left + 768;
+      const contentEl = document.getElementById("home");
+      const rect = contentEl?.getBoundingClientRect();
+      const left = rect ? rect.left : (window.innerWidth - 768) / 2;
+      const right = rect ? rect.right : left + 768;
       contentRect = { left, right, top: frameMargin, bottom: window.innerHeight - frameMargin };
     }
 

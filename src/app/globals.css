@@ -32,6 +32,7 @@
 
 :root {
   --frame-margin: 0px;
+  --nav-reserve: 4rem;
 }
 
 @media (min-width: 1280px) {
@@ -63,7 +64,8 @@ html {
 body {
   background: var(--color-bg);
   color: var(--color-ink);
-  padding-block: var(--frame-margin);
+  padding-top: calc(var(--frame-margin) + var(--nav-reserve));
+  padding-bottom: var(--frame-margin);
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
@@ -73,7 +75,7 @@ body {
 }
 
 .section-anchor {
-  scroll-margin-top: calc(var(--frame-margin) + 5rem);
+  scroll-margin-top: calc(var(--frame-margin) + 1rem);
 }
 
 @media (prefers-reduced-motion: reduce) {

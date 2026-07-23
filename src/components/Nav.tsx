@@ -33,34 +33,32 @@ export default function Nav() {
 
   return (
     <header
-      className="sticky z-40 border-b-2 border-line bg-bg"
-      style={{ top: "var(--frame-margin)" }}
+      className="fixed z-40 flex items-center gap-2 border-2 border-line bg-bg px-2.5 py-1.5"
+      style={{ top: "calc(var(--frame-margin) + 0.75rem)", right: "0.75rem" }}
     >
-      <nav className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 px-6 py-4">
-        <a href="#home" aria-label="MeihAO - 回首頁" className="flex items-center">
-          <PlumBlossomMark />
-        </a>
-        <ul className="flex gap-1 text-sm">
-          {sections.map((section) => {
-            const isActive = active === section.id;
-            return (
-              <li key={section.id}>
-                <a
-                  href={`#${section.id}`}
-                  className={`border-2 border-transparent border-b-[3px] px-3 py-2 ${
-                    isActive
-                      ? "border-line border-b-accent bg-surface text-ink"
-                      : "text-muted hover:text-ink"
-                  }`}
-                >
-                  {section.label}
-                </a>
-              </li>
-            );
-          })}
-        </ul>
-        <ThemeToggle />
-      </nav>
+      <a href="#home" aria-label="MeihAO - 回首頁" className="flex items-center">
+        <PlumBlossomMark unit={2} />
+      </a>
+      <ul className="flex gap-0.5 text-xs">
+        {sections.map((section) => {
+          const isActive = active === section.id;
+          return (
+            <li key={section.id}>
+              <a
+                href={`#${section.id}`}
+                className={`border-2 border-transparent border-b-[3px] px-2 py-1 ${
+                  isActive
+                    ? "border-line border-b-accent bg-surface text-ink"
+                    : "text-muted hover:text-ink"
+                }`}
+              >
+                {section.label}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+      <ThemeToggle />
     </header>
   );
 }
