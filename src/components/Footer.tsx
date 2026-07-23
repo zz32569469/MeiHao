@@ -7,7 +7,7 @@ const links = [
 
 export default function Footer() {
   return (
-    <footer className="border-t-2 border-line">
+    <footer className="border-t-2 border-line bg-bg">
       <div className="mx-auto flex max-w-3xl flex-col gap-4 px-6 py-8 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
         <p className="font-mono text-xs text-muted">
           © {new Date().getFullYear()} MeihAO

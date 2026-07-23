@@ -74,7 +74,7 @@ export default function RootLayout({
           {themeInitScript}
         </Script>
         <Nav />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 bg-bg">{children}</main>
         <Footer />
         <PetalField />
       </body>

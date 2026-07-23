@@ -13,6 +13,7 @@
   --on-accent: #f8f4e8;
   --blossom: #ab8683;
   --blossom-dim: #8c6b68;
+  --frame-bg: #c2b190;
 }
 
 .dark {
@@ -28,6 +29,7 @@
   --on-accent: #16130f;
   --blossom: #b99490;
   --blossom-dim: #8f716d;
+  --frame-bg: #0d0b08;
 }
 
 :root {
@@ -62,7 +64,7 @@ html {
 }
 
 body {
-  background: var(--color-bg);
+  background: var(--frame-bg);
   color: var(--color-ink);
   padding-top: calc(var(--frame-margin) + var(--nav-reserve));
   padding-bottom: var(--frame-margin);
