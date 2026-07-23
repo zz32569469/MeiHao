@@ -10,25 +10,34 @@ const sections = [
   { id: "projects", label: "作品集" },
 ];
 
+// 抓「頂端已經捲過這條線的區塊」而非重疊區間，短區塊（如自我介紹）才不會被跳過
+const ACTIVE_LINE_PX = 100;
+
 export default function Nav() {
   const [active, setActive] = useState("home");
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) setActive(entry.target.id);
-        });
-      },
-      { rootMargin: "-96px 0px -55% 0px", threshold: 0 },
-    );
+    let ticking = false;
 
-    sections.forEach(({ id }) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
+    const updateActive = () => {
+      ticking = false;
+      let current = sections[0].id;
+      for (const { id } of sections) {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top <= ACTIVE_LINE_PX) current = id;
+      }
+      setActive(current);
+    };
 
-    return () => observer.disconnect();
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(updateActive);
+    };
+
+    updateActive();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
