@@ -30,7 +30,7 @@ export default function Home() {
         className="mx-auto flex max-w-3xl scroll-mt-20 flex-col gap-8 px-6 py-24 sm:flex-row sm:items-start"
       >
         <div className="relative h-24 w-24 flex-none overflow-hidden border-[3px] border-accent sm:h-28 sm:w-28">
-          <Image src={`${BASE_PATH}/avatar.jpg`} alt="陳梅豪" fill className="object-cover" />
+          <Image src={`${BASE_PATH}/avatar.jpg`} alt="MeihAO" fill className="object-cover" />
         </div>
 
         <div className="flex flex-col gap-6">
@@ -38,7 +38,7 @@ export default function Home() {
             STATUS · 你好，我是
           </span>
           <h1 className="font-serif text-4xl font-bold tracking-wide sm:text-5xl">
-            陳梅豪
+            MeihAO
           </h1>
           <p className="max-w-xl text-lg text-muted">
             愛玩遊戲的軟體工程師，正在學習使用 AI 做自己想做的事情。

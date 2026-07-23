@@ -4,7 +4,7 @@ import { buildBlossomCells, type BlossomRole } from "@/lib/plumBlossomCells";
 export const dynamic = "force-static";
 
 const SIZE = { width: 1200, height: 630 };
-const TEXT = "陳梅豪個人作品集";
+const TEXT = "MeihAO個人作品集";
 const PIXEL = 10;
 
 const BLOSSOM_COLOR: Record<BlossomRole, string> = {
@@ -92,7 +92,7 @@ export async function GET() {
               letterSpacing: 4,
             }}
           >
-            陳梅豪
+            MeihAO
           </div>
           <div
             style={{

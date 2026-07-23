@@ -34,7 +34,7 @@ export default function Nav() {
   return (
     <header className="sticky top-0 z-40 border-b-2 border-line bg-bg">
       <nav className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 px-6 py-4">
-        <a href="#home" aria-label="陳梅豪 - 回首頁" className="flex items-center">
+        <a href="#home" aria-label="MeihAO - 回首頁" className="flex items-center">
           <PlumBlossomMark />
         </a>
         <ul className="flex gap-1 text-sm">

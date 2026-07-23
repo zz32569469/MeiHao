@@ -23,7 +23,7 @@ const notoSerifTC = Noto_Serif_TC({
   subsets: ["latin"],
 });
 
-const title = "陳梅豪 | Personal Site";
+const title = "MeihAO | Personal Site";
 const description = "個人作品集與自我介紹";
 
 export const metadata: Metadata = {
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     title,
     description,
     url: `${BASE_PATH}/`,
-    siteName: "陳梅豪",
+    siteName: "MeihAO",
     images: [`${BASE_PATH}/og`],
     locale: "zh_TW",
     type: "website",
