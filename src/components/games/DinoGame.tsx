@@ -48,6 +48,7 @@ function createObstacleGroup(): Obstacle[] {
 
 function initialState() {
   return {
+    started: false,
     playerY: GROUND_Y - PLAYER_SIZE,
     velocity: 0,
     grounded: true,
@@ -66,12 +67,18 @@ export default function DinoGame() {
   const [score, setScore] = useState(0);
   const [best, setBest] = useState(0);
   const [gameOver, setGameOver] = useState(false);
+  const [started, setStarted] = useState(false);
   const stateRef = useRef(initialState());
 
   const reset = useCallback(() => {
-    stateRef.current = initialState();
+    const s = initialState();
+    s.started = true;
+    s.velocity = JUMP_VELOCITY;
+    s.grounded = false;
+    stateRef.current = s;
     setScore(0);
     setGameOver(false);
+    setStarted(true);
   }, []);
 
   const startJump = useCallback(() => {
@@ -79,6 +86,10 @@ export default function DinoGame() {
     if (s.over) {
       reset();
       return;
+    }
+    if (!s.started) {
+      s.started = true;
+      setStarted(true);
     }
     if (s.grounded) {
       s.velocity = JUMP_VELOCITY;
@@ -131,7 +142,7 @@ export default function DinoGame() {
       const s = stateRef.current;
       const c = colors.current;
 
-      if (!s.over) {
+      if (!s.over && s.started) {
         s.velocity += GRAVITY * dt;
         s.playerY += s.velocity * dt;
         if (s.playerY >= GROUND_Y - PLAYER_SIZE) {
@@ -216,6 +227,11 @@ export default function DinoGame() {
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-bg/80 font-mono text-sm">
             <p className="font-bold text-status">GAME OVER</p>
             <p className="text-muted">點擊畫面或按空白鍵重新開始</p>
+          </div>
+        )}
+        {!gameOver && !started && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-bg/80 font-mono text-sm">
+            <p className="font-bold text-ink">按空白鍵 / ↑ / 點擊畫面開始</p>
           </div>
         )}
       </div>

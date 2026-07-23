@@ -41,6 +41,7 @@ function initialState() {
     { x: 6, y: 10 },
   ];
   return {
+    started: false,
     snake,
     direction: "right" as Direction,
     pending: "right" as Direction,
@@ -57,12 +58,16 @@ export default function SnakeGame() {
   const [score, setScore] = useState(0);
   const [best, setBest] = useState(0);
   const [gameOver, setGameOver] = useState(false);
+  const [started, setStarted] = useState(false);
   const stateRef = useRef(initialState());
 
   const reset = useCallback(() => {
-    stateRef.current = initialState();
+    const s = initialState();
+    s.started = true;
+    stateRef.current = s;
     setScore(0);
     setGameOver(false);
+    setStarted(true);
   }, []);
 
   const setDirection = useCallback(
@@ -71,6 +76,10 @@ export default function SnakeGame() {
       if (s.over) {
         reset();
         return;
+      }
+      if (!s.started) {
+        s.started = true;
+        setStarted(true);
       }
       if (OPPOSITE[dir] === s.direction) return;
       s.pending = dir;
@@ -121,7 +130,7 @@ export default function SnakeGame() {
       const s = stateRef.current;
       const c = colors.current;
 
-      if (!s.over) {
+      if (!s.over && s.started) {
         s.acc += dt;
         while (s.acc >= s.interval) {
           s.acc -= s.interval;
@@ -191,6 +200,11 @@ export default function SnakeGame() {
             >
               重新開始
             </button>
+          </div>
+        )}
+        {!gameOver && !started && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-bg/80 font-mono text-sm">
+            <p className="font-bold text-ink">按方向鍵開始</p>
           </div>
         )}
       </div>

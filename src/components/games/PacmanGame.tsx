@@ -68,6 +68,7 @@ function countDots(dots: boolean[][]): number {
 function initialState() {
   const dots = buildDots();
   return {
+    started: false,
     player: { ...PLAYER_START },
     direction: "left" as Direction,
     pending: "left" as Direction,
@@ -88,12 +89,16 @@ export default function PacmanGame() {
   const colors = useThemeColors();
   const [score, setScore] = useState(0);
   const [status, setStatus] = useState<"playing" | "won" | "lost">("playing");
+  const [started, setStarted] = useState(false);
   const stateRef = useRef(initialState());
 
   const reset = useCallback(() => {
-    stateRef.current = initialState();
+    const s = initialState();
+    s.started = true;
+    stateRef.current = s;
     setScore(0);
     setStatus("playing");
+    setStarted(true);
   }, []);
 
   const setDirection = useCallback(
@@ -102,6 +107,10 @@ export default function PacmanGame() {
       if (s.over || s.won) {
         reset();
         return;
+      }
+      if (!s.started) {
+        s.started = true;
+        setStarted(true);
       }
       s.pending = dir;
     },
@@ -203,7 +212,7 @@ export default function PacmanGame() {
       const s = stateRef.current;
       const c = colors.current;
 
-      if (!s.over && !s.won) {
+      if (!s.over && !s.won && s.started) {
         s.playerAcc += dt;
         while (s.playerAcc >= PLAYER_INTERVAL) {
           s.playerAcc -= PLAYER_INTERVAL;
@@ -272,7 +281,13 @@ export default function PacmanGame() {
       >
         <span>DOTS {score}</span>
         <span>
-          {status === "won" ? "STATUS · 過關" : status === "lost" ? "STATUS · GAME OVER" : "STATUS · 進行中"}
+          {status === "won"
+            ? "STATUS · 過關"
+            : status === "lost"
+              ? "STATUS · GAME OVER"
+              : started
+                ? "STATUS · 進行中"
+                : "STATUS · 尚未開始"}
         </span>
       </div>
       <div className="relative">
@@ -289,6 +304,11 @@ export default function PacmanGame() {
             >
               重新開始
             </button>
+          </div>
+        )}
+        {status === "playing" && !started && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-bg/80 font-mono text-sm">
+            <p className="font-bold text-ink">按方向鍵開始</p>
           </div>
         )}
       </div>
