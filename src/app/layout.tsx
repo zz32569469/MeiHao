@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { ViewTransition } from "react";
 import { Geist, Geist_Mono, Noto_Serif_TC } from "next/font/google";
 import Script from "next/script";
 import Nav from "@/components/Nav";
@@ -75,9 +74,7 @@ export default function RootLayout({
           {themeInitScript}
         </Script>
         <Nav />
-        <main className="flex-1">
-          <ViewTransition>{children}</ViewTransition>
-        </main>
+        <main className="flex-1">{children}</main>
         <Footer />
         <PetalField />
       </body>

@@ -1,41 +1,57 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import PlumBlossomMark from "./PlumBlossomMark";
 import ThemeToggle from "./ThemeToggle";
 
-const links = [
-  { href: "/", label: "首頁" },
-  { href: "/about", label: "自我介紹" },
-  { href: "/projects", label: "作品集" },
+const sections = [
+  { id: "home", label: "首頁" },
+  { id: "about", label: "自我介紹" },
+  { id: "projects", label: "作品集" },
 ];
 
 export default function Nav() {
-  const pathname = usePathname();
+  const [active, setActive] = useState("home");
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActive(entry.target.id);
+        });
+      },
+      { rootMargin: "-45% 0px -50% 0px", threshold: 0 },
+    );
+
+    sections.forEach(({ id }) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <header className="border-b-2 border-line bg-bg">
+    <header className="sticky top-0 z-40 border-b-2 border-line bg-bg">
       <nav className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 px-6 py-4">
-        <Link href="/" aria-label="陳梅豪 - 回首頁" className="flex items-center">
+        <a href="#home" aria-label="陳梅豪 - 回首頁" className="flex items-center">
           <PlumBlossomMark />
-        </Link>
+        </a>
         <ul className="flex gap-1 text-sm">
-          {links.map((link) => {
-            const active =
-              link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
+          {sections.map((section) => {
+            const isActive = active === section.id;
             return (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
+              <li key={section.id}>
+                <a
+                  href={`#${section.id}`}
                   className={`border-2 border-transparent border-b-[3px] px-3 py-2 ${
-                    active
+                    isActive
                       ? "border-line border-b-accent bg-surface text-ink"
                       : "text-muted hover:text-ink"
                   }`}
                 >
-                  {link.label}
-                </Link>
+                  {section.label}
+                </a>
               </li>
             );
           })}
