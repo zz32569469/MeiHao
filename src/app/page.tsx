@@ -27,7 +27,7 @@ export default function Home() {
     <>
       <section
         id="home"
-        className="mx-auto flex max-w-3xl scroll-mt-20 flex-col gap-8 px-6 py-24 sm:flex-row sm:items-start"
+        className="section-anchor mx-auto flex max-w-3xl flex-col gap-8 px-6 py-24 sm:flex-row sm:items-start"
       >
         <div className="relative h-24 w-24 flex-none overflow-hidden border-[3px] border-accent sm:h-28 sm:w-28">
           <Image src={`${BASE_PATH}/avatar.jpg`} alt="MeihAO" fill className="object-cover" />
@@ -60,7 +60,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="about" className="scroll-mt-20 border-t-2 border-line bg-surface">
+      <section id="about" className="section-anchor border-t-2 border-line bg-surface">
         <div className="mx-auto flex max-w-3xl flex-col gap-12 px-6 py-24">
           <div>
             <h2 className="font-serif text-3xl font-bold tracking-wide">關於我</h2>
@@ -69,7 +69,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="projects" className="scroll-mt-20 border-t-2 border-line">
+      <section id="projects" className="section-anchor border-t-2 border-line">
         <div className="mx-auto flex max-w-3xl flex-col gap-8 px-6 py-24">
           <div>
             <h2 className="font-serif text-3xl font-bold tracking-wide">作品集</h2>

@@ -32,7 +32,10 @@ export default function Nav() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-40 border-b-2 border-line bg-bg">
+    <header
+      className="sticky z-40 border-b-2 border-line bg-bg"
+      style={{ top: "var(--frame-margin)" }}
+    >
       <nav className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 px-6 py-4">
         <a href="#home" aria-label="MeihAO - 回首頁" className="flex items-center">
           <PlumBlossomMark />

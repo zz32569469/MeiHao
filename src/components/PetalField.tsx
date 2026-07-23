@@ -15,8 +15,11 @@ type Petal = {
   colorIndex: 0 | 1;
 };
 
+type ContentRect = { left: number; right: number; top: number; bottom: number } | null;
+
 const MAX_PETALS = 90;
 const SIZES = [3, 4, 5];
+const FRAME_BREAKPOINT = 1280;
 
 export default function PetalField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -41,6 +44,35 @@ export default function PetalField() {
     const themeObserver = new MutationObserver(readColors);
     themeObserver.observe(document.documentElement, { attributeFilter: ["class"] });
 
+    // On wide screens (matching the CSS --frame-margin breakpoint), the site
+    // sits in a margin frame and petals should stay confined to that margin
+    // instead of falling over the readable content column. Below the
+    // breakpoint there's no frame, so this is a no-op (contentRect stays
+    // null and everywhere counts as "margin", i.e. the original behavior).
+    let contentRect: ContentRect = null;
+
+    function readContentRect() {
+      if (window.innerWidth < FRAME_BREAKPOINT) {
+        contentRect = null;
+        return;
+      }
+      const frameMargin = parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue("--frame-margin"),
+      ) || 0;
+      const navEl = document.querySelector("header nav");
+      const navRect = navEl?.getBoundingClientRect();
+      const left = navRect ? navRect.left : (window.innerWidth - 768) / 2;
+      const right = navRect ? navRect.right : left + 768;
+      contentRect = { left, right, top: frameMargin, bottom: window.innerHeight - frameMargin };
+    }
+
+    function inMargin(x: number, y: number) {
+      if (!contentRect) return true;
+      return (
+        x < contentRect.left || x > contentRect.right || y < contentRect.top || y > contentRect.bottom
+      );
+    }
+
     let dpr = window.devicePixelRatio || 1;
     function resize() {
       dpr = window.devicePixelRatio || 1;
@@ -49,6 +81,7 @@ export default function PetalField() {
       canvas!.style.width = window.innerWidth + "px";
       canvas!.style.height = window.innerHeight + "px";
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+      readContentRect();
     }
     resize();
     window.addEventListener("resize", resize);
@@ -73,14 +106,32 @@ export default function PetalField() {
       }
     }
 
+    function spawnAmbient() {
+      const w = window.innerWidth;
+      if (!contentRect) {
+        spawn(Math.random() * w, -10, 1);
+        return;
+      }
+      const roll = Math.random();
+      if (roll < 0.5) {
+        spawn(Math.random() * w, -10, 1);
+      } else if (roll < 0.75) {
+        spawn(Math.random() * contentRect.left, -10, 1);
+      } else {
+        spawn(contentRect.right + Math.random() * (w - contentRect.right), -10, 1);
+      }
+    }
+
     let lastSpawn = 0;
     function handlePointerMove(e: PointerEvent) {
+      if (!inMargin(e.clientX, e.clientY)) return;
       const now = performance.now();
       if (now - lastSpawn < 60) return;
       lastSpawn = now;
       spawn(e.clientX, e.clientY, 1);
     }
     function handlePointerDown(e: PointerEvent) {
+      if (!inMargin(e.clientX, e.clientY)) return;
       spawn(e.clientX, e.clientY, 8);
     }
 
@@ -100,7 +151,7 @@ export default function PetalField() {
       ambientTimer++;
       if (ambientTimer > 240) {
         ambientTimer = 0;
-        spawn(Math.random() * w, -10, 1);
+        spawnAmbient();
       }
 
       petals = petals.filter((p) => p.life < p.maxLife);
@@ -110,6 +161,8 @@ export default function PetalField() {
         p.y += p.vy;
         p.angle += p.spin;
         p.vy += 0.002;
+
+        if (!inMargin(p.x, p.y)) return;
 
         const fadeIn = Math.min(1, p.life / 10);
         const fadeOut = Math.min(1, (p.maxLife - p.life) / 20);
