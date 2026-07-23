@@ -24,7 +24,7 @@ export default function GameShowcase() {
       </span>
 
       <div>
-        <h2 className="font-serif font-bold text-ink">小遊戲試玩</h2>
+        <h3 className="font-serif font-bold text-ink">小遊戲試玩</h3>
         <p className="mt-1 text-sm text-muted">
           還沒有正式作品，先放三個自己刻的小遊戲練手，選一個玩玩看。
         </p>
