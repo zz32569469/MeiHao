@@ -13,14 +13,6 @@ type Project = {
   itch?: string;
 };
 
-const experience = [
-  {
-    period: "2024 - 現在",
-    title: "職稱 / 專案名稱",
-    detail: "簡短描述你在這段期間做了什麼、負責什麼。",
-  },
-];
-
 // 還沒有能公開的作品，先留空。要加作品時往這個陣列 push 一筆即可。
 const projects: Project[] = [];
 
@@ -49,7 +41,7 @@ export default function Home() {
             陳梅豪
           </h1>
           <p className="max-w-xl text-lg text-muted">
-            一句話介紹自己在做什麼，例如：軟體工程師，專注於遊戲開發與互動體驗。
+            愛玩遊戲的軟體工程師，正在學習使用 AI 做自己想做的事情。
           </p>
           <div className="flex gap-4 pt-4">
             <a
@@ -72,25 +64,7 @@ export default function Home() {
         <div className="mx-auto flex max-w-3xl flex-col gap-12 px-6 py-24">
           <div>
             <h2 className="font-serif text-3xl font-bold tracking-wide">關於我</h2>
-            <p className="mt-4 max-w-2xl text-muted">
-              在這裡寫一段自我介紹：背景、興趣、目前在做的事、想找的機會等等。
-              兩到三句話即可，不用寫成流水帳。
-            </p>
-          </div>
-
-          <div>
-            <h3 className="font-mono text-xs font-bold tracking-wide text-accent uppercase">
-              經歷
-            </h3>
-            <ul className="mt-4 flex flex-col gap-6 border-l-2 border-line pl-5">
-              {experience.map((item) => (
-                <li key={item.title}>
-                  <p className="font-mono text-xs text-muted">{item.period}</p>
-                  <p className="font-semibold text-ink">{item.title}</p>
-                  <p className="text-sm text-muted">{item.detail}</p>
-                </li>
-              ))}
-            </ul>
+            <p className="mt-4 max-w-2xl text-muted">自我介紹還在整理，之後會補上。</p>
           </div>
         </div>
       </section>

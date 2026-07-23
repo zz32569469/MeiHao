@@ -1,9 +1,8 @@
 import VisitorCounter from "./VisitorCounter";
 
 const links = [
-  { label: "EMAIL", href: "mailto:you@example.com" },
+  { label: "EMAIL", href: "mailto:zz32569469@gmail.com" },
   { label: "GITHUB", href: "https://github.com/zz32569469" },
-  { label: "ITCH.IO", href: "https://your-username.itch.io" },
 ];
 
 export default function Footer() {
