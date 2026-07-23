@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useThemeColors } from "./useThemeColors";
+import { useHighScore } from "./useHighScore";
 import TouchDpad, { type Direction } from "./TouchDpad";
 
 const COLS = 20;
@@ -56,7 +57,7 @@ export default function SnakeGame() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const colors = useThemeColors();
   const [score, setScore] = useState(0);
-  const [best, setBest] = useState(0);
+  const [best, reportScore] = useHighScore("meihao-snake-best");
   const [gameOver, setGameOver] = useState(false);
   const [started, setStarted] = useState(false);
   const stateRef = useRef(initialState());
@@ -145,7 +146,7 @@ export default function SnakeGame() {
           if (hitWall || hitSelf) {
             s.over = true;
             setGameOver(true);
-            setBest((b) => Math.max(b, s.snake.length - 3));
+            reportScore(s.snake.length - 3);
             break;
           }
 
@@ -180,7 +181,7 @@ export default function SnakeGame() {
       window.removeEventListener("keydown", handleKey);
       cancelAnimationFrame(raf);
     };
-  }, [colors, setDirection]);
+  }, [colors, setDirection, reportScore]);
 
   return (
     <div className="flex flex-col items-center gap-3">

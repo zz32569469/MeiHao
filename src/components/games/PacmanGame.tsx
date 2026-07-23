@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useThemeColors } from "./useThemeColors";
+import { useHighScore } from "./useHighScore";
 import TouchDpad, { type Direction } from "./TouchDpad";
 
 const MAZE_ROWS = [
@@ -75,6 +76,7 @@ function initialState() {
     ghosts: GHOST_STARTS.map((g) => ({ pos: { ...g.pos }, dir: g.dir })),
     dots,
     dotsLeft: countDots(dots),
+    score: 0,
     playerAcc: 0,
     ghostAcc: 0,
     over: false,
@@ -88,6 +90,7 @@ export default function PacmanGame() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const colors = useThemeColors();
   const [score, setScore] = useState(0);
+  const [best, reportScore] = useHighScore("meihao-pacman-best");
   const [status, setStatus] = useState<"playing" | "won" | "lost">("playing");
   const [started, setStarted] = useState(false);
   const stateRef = useRef(initialState());
@@ -164,10 +167,12 @@ export default function PacmanGame() {
       if (s.dots[s.player.y][s.player.x]) {
         s.dots[s.player.y][s.player.x] = false;
         s.dotsLeft -= 1;
-        setScore((prev) => prev + 1);
+        s.score += 1;
+        setScore(s.score);
         if (s.dotsLeft <= 0) {
           s.won = true;
           setStatus("won");
+          reportScore(s.score);
         }
       }
     }
@@ -228,6 +233,7 @@ export default function PacmanGame() {
         if (s.ghosts.some((g) => g.pos.x === s.player.x && g.pos.y === s.player.y)) {
           s.over = true;
           setStatus("lost");
+          reportScore(s.score);
         }
       }
 
@@ -271,7 +277,7 @@ export default function PacmanGame() {
       window.removeEventListener("keydown", handleKey);
       cancelAnimationFrame(raf);
     };
-  }, [colors, setDirection]);
+  }, [colors, setDirection, reportScore]);
 
   return (
     <div className="flex flex-col items-center gap-3">
@@ -279,7 +285,9 @@ export default function PacmanGame() {
         className="flex w-full justify-between font-mono text-xs tracking-wide text-muted"
         style={{ maxWidth: WIDTH }}
       >
-        <span>DOTS {score}</span>
+        <span>
+          DOTS {score} · BEST {best}
+        </span>
         <span>
           {status === "won"
             ? "STATUS · 過關"

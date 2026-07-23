@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useThemeColors } from "./useThemeColors";
+import { useHighScore } from "./useHighScore";
 
 const WIDTH = 600;
 const HEIGHT = 200;
@@ -65,7 +66,7 @@ export default function DinoGame() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const colors = useThemeColors();
   const [score, setScore] = useState(0);
-  const [best, setBest] = useState(0);
+  const [best, reportScore] = useHighScore("meihao-dino-best");
   const [gameOver, setGameOver] = useState(false);
   const [started, setStarted] = useState(false);
   const stateRef = useRef(initialState());
@@ -174,7 +175,7 @@ export default function DinoGame() {
           if (hit) {
             s.over = true;
             setGameOver(true);
-            setBest((b) => Math.max(b, s.score));
+            reportScore(s.score);
           }
         }
 
@@ -207,7 +208,7 @@ export default function DinoGame() {
       window.removeEventListener("keyup", handleKeyUp);
       cancelAnimationFrame(raf);
     };
-  }, [colors, startJump, endJump]);
+  }, [colors, startJump, endJump, reportScore]);
 
   return (
     <div className="flex flex-col items-center gap-3">
