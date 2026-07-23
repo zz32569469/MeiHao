@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
   basePath: BASE_PATH,
   assetPrefix: `${BASE_PATH}/`,
+  experimental: {
+    viewTransition: true,
+  },
 };
 
 export default nextConfig;
