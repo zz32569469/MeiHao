@@ -8,8 +8,8 @@ export const metadata: Metadata = {
 
 export default function RoomPrototypePage() {
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-6 px-6 py-16">
-      <div>
+    <div className="flex flex-col gap-6 px-6 py-10">
+      <div className="mx-auto w-full max-w-3xl">
         <span className="inline-flex w-fit items-center gap-2 border-2 border-accent px-2.5 py-1 font-mono text-xs tracking-wide text-accent uppercase before:h-1.5 before:w-1.5 before:bg-status before:content-['']">
           PROTOTYPE · 測試中
         </span>

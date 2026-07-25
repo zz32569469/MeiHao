@@ -44,7 +44,11 @@ export default function RoomScene() {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <svg viewBox="-280 -200 560 480" className="w-full max-w-2xl">
+      <svg
+        viewBox="-280 -200 560 480"
+        preserveAspectRatio="xMidYMid meet"
+        className="h-[75vh] max-h-[760px] w-full max-w-[1400px]"
+      >
         <polygon points={backWall} fill="var(--surface)" style={{ filter: "brightness(0.9)" }} />
         <polygon points={leftWall} fill="var(--surface)" style={{ filter: "brightness(0.78)" }} />
         <polygon points={floor} fill="var(--line)" style={{ filter: "brightness(0.75)" }} />
