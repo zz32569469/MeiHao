@@ -7,9 +7,12 @@ import GameShowcase from "@/components/games/GameShowcase";
 import DiscordPresenceCard from "./DiscordPresenceCard";
 import { useDiscordPresence, STATUS_META } from "./useDiscordPresence";
 
-const ROOM_W = 8;
-const ROOM_D = 7;
-const WALL_H = 3.6;
+// 依使用者手繪平面圖：寬淺的房間，後牆放門/衣櫃/白色小櫃/高木櫃，
+// 左牆放吊衣架，右牆放小櫃子，地板中央擺筆電桌/msi 螢幕/床。
+// 座標系：gridX 0→W 對應平面圖左→右，gridY 0→D 對應平面圖上（後牆）→下。
+const ROOM_W = 10;
+const ROOM_D = 5;
+const WALL_H = 3.4;
 
 type HotspotId = "monitor" | "hobby" | "wip" | "works" | "contact" | "about";
 
@@ -22,7 +25,6 @@ const HOTSPOT_LABEL: Record<HotspotId, string> = {
   about: "關於我",
 };
 
-// 熱點按鈕列的順序（含電燈開關這個直接切換、不開面板的特例）
 const HOTSPOT_ORDER: HotspotId[] = ["monitor", "hobby", "wip", "works", "contact", "about"];
 
 const HOBBY_ITEMS = [
@@ -71,7 +73,7 @@ export default function RoomScene() {
   const rightWall = pts(pr(0, 0, 0), pr(ROOM_W, 0, 0), pr(ROOM_W, 0, WALL_H), pr(0, 0, WALL_H));
   const leftWall = pts(pr(0, 0, 0), pr(0, ROOM_D, 0), pr(0, ROOM_D, WALL_H), pr(0, 0, WALL_H));
 
-  // 右牆（y=0 平面）上的矩形貼片
+  // 後牆（y=0 平面）上的矩形貼片
   const wallR = (x0: number, x1: number, z0: number, z1: number) =>
     pts(pr(x0, 0, z0), pr(x1, 0, z0), pr(x1, 0, z1), pr(x0, 0, z1));
 
@@ -82,55 +84,30 @@ export default function RoomScene() {
     onClick: () => setOpen(id),
   });
 
-  // 每件家具帶一個 depth（footprint 中心的 x+y），小的先畫、大的後畫，
-  // 讓等角視圖的前後遮擋正確，不用手動排 JSX 順序。
+  // 每件家具帶一個 depth，小的先畫、大的後畫，讓等角視圖前後遮擋正確。
   const pieces: { key: string; depth: number; node: ReactNode }[] = [];
   const add = (key: string, depth: number, node: ReactNode) => pieces.push({ key, depth, node });
 
-  // 窗戶 + 窗簾（右牆貼片，最遠）
+  // ── 後牆 ─────────────────────────────────────────
+  // 門
   add(
-    "window",
-    0.1,
+    "door",
+    0.05,
     <g>
-      <polygon points={wallR(2.2, 4.4, 1.4, 3.0)} fill="var(--surface)" style={{ filter: "brightness(0.7)" }} />
-      <polygon points={wallR(2.2, 2.9, 1.4, 3.0)} fill="var(--muted)" style={{ filter: "brightness(0.9)" }} />
-      <polygon points={wallR(3.7, 4.4, 1.4, 3.0)} fill="var(--muted)" style={{ filter: "brightness(0.9)" }} />
-    </g>,
-  );
-
-  // 冷氣（窗戶上方）
-  add(
-    "ac",
-    0.12,
-    <IsoCuboid origin={{ x: 2.6, y: 0, z: 3.05 }} size={{ x: 1.3, y: 0.3, z: 0.35 }} color="var(--surface)" />,
-  );
-
-  // 牆上便條 + 星星 → 關於我
-  add(
-    "about",
-    0.2,
-    <g {...hotspotProps("about")}>
+      <polygon points={wallR(1.2, 3.4, 0, 2.1)} fill="var(--accent-dim)" style={{ filter: "brightness(0.6)" }} />
       <polygon
-        points={wallR(0.5, 1.5, 2.2, 3.0)}
-        fill="var(--surface)"
-        stroke={hovered === "about" ? "var(--accent-strong)" : "var(--line)"}
-        strokeWidth={hovered === "about" ? 3 : 1.5}
+        points={wallR(1.2, 3.4, 0, 2.1)}
+        fill="none"
+        stroke="var(--line)"
+        strokeWidth={2}
       />
-      {[
-        [0.75, 2.05],
-        [1.25, 2.45],
-        [0.95, 3.15],
-      ].map(([sx, sz], i) => {
-        const p = pr(sx, 0, sz);
-        return <circle key={i} cx={p.x} cy={p.y} r={hovered === "about" ? 4 : 3} fill="var(--accent)" />;
-      })}
     </g>,
   );
 
-  // 電燈開關 → 亮／暗切換（不開面板，直接 toggle）
+  // 電燈開關 → 亮／暗切換（門旁邊的牆上）
   add(
     "switch",
-    0.15,
+    0.1,
     <g
       className="cursor-pointer"
       onMouseEnter={() => setHovered("switch")}
@@ -138,114 +115,135 @@ export default function RoomScene() {
       onClick={toggleTheme}
     >
       <polygon
-        points={wallR(4.7, 5.0, 1.5, 2.0)}
+        points={wallR(3.6, 3.9, 1.4, 1.95)}
         fill="var(--surface)"
         stroke={hovered === "switch" ? "var(--accent-strong)" : "var(--line)"}
         strokeWidth={hovered === "switch" ? 3 : 1.5}
       />
       {(() => {
-        // 亮色模式 = 開燈（發光的琥珀點），暗色模式 = 關燈（暗點）
-        const p = pr(4.85, 0, isDark ? 1.62 : 1.88);
+        const p = pr(3.75, 0, isDark ? 1.55 : 1.82);
         return <circle cx={p.x} cy={p.y} r={4} fill={isDark ? "var(--line)" : "var(--accent-strong)"} />;
       })()}
     </g>,
   );
 
-  // 書桌 + 層架（鋼彈/公仔） → 興趣收藏
+  // 牆上便條 + 星星 → 關於我（後牆最左的空位）
+  add(
+    "about",
+    0.15,
+    <g {...hotspotProps("about")}>
+      <polygon
+        points={wallR(0.2, 1.0, 2.0, 2.8)}
+        fill="var(--surface)"
+        stroke={hovered === "about" ? "var(--accent-strong)" : "var(--line)"}
+        strokeWidth={hovered === "about" ? 3 : 1.5}
+      />
+      {[
+        [0.4, 1.85],
+        [0.8, 2.25],
+        [0.55, 2.95],
+      ].map(([sx, sz], i) => {
+        const p = pr(sx, 0, sz);
+        return <circle key={i} cx={p.x} cy={p.y} r={hovered === "about" ? 4 : 3} fill="var(--accent)" />;
+      })}
+    </g>,
+  );
+
+  // 衣櫃（高，氣氛擺設）
+  add(
+    "wardrobe",
+    5.4,
+    <IsoCuboid origin={{ x: 3.9, y: 0, z: 0 }} size={{ x: 2.1, y: 0.9, z: 2.7 }} color="var(--accent-dim)" />,
+  );
+
+  // 白色四層小櫃子（氣氛擺設）
+  add(
+    "dresser",
+    7.1,
+    <IsoCuboid origin={{ x: 6.2, y: 0, z: 0 }} size={{ x: 1.1, y: 0.8, z: 1.4 }} color="var(--surface)" />,
+  );
+
+  // 高木櫃 → 作品集
+  add(
+    "works",
+    9.2,
+    <g {...hotspotProps("works")}>
+      <IsoCuboid origin={{ x: 7.5, y: 0, z: 0 }} size={{ x: 2.5, y: 1.1, z: 2.5 }} color="var(--accent-dim)" hovered={hovered === "works"} />
+    </g>,
+  );
+
+  // ── 左牆 ─────────────────────────────────────────
+  // 吊衣架（氣氛擺設）
+  add(
+    "rack",
+    2.0,
+    <g>
+      <IsoCuboid origin={{ x: 0.1, y: 0.9, z: 0 }} size={{ x: 0.12, y: 0.7, z: 2.1 }} color="var(--line)" />
+      <IsoCuboid origin={{ x: 0, y: 0.85, z: 0.6 }} size={{ x: 0.9, y: 0.9, z: 1.35 }} color="var(--muted)" />
+    </g>,
+  );
+
+  // ── 地板 ─────────────────────────────────────────
+  // 筆電桌底座（氣氛，鋼彈層架與筆電疊在上面）
+  add(
+    "deskbase",
+    4.0,
+    <IsoCuboid origin={{ x: 0.2, y: 3.0, z: 0 }} size={{ x: 1.4, y: 1.8, z: 1.05 }} color="var(--accent)" />,
+  );
+
+  // 鋼彈層架 → 興趣收藏
   add(
     "hobby",
-    2.2,
+    4.1,
     <g {...hotspotProps("hobby")}>
-      <IsoCuboid
-        origin={{ x: 0, y: 0.9, z: 0 }}
-        size={{ x: 1.3, y: 1.6, z: 1.05 }}
-        color="var(--accent)"
-        hovered={hovered === "hobby"}
-      />
-      <IsoCuboid
-        origin={{ x: 0, y: 0.9, z: 1.05 }}
-        size={{ x: 0.5, y: 1.6, z: 1.95 }}
-        color="var(--accent-dim)"
-        hovered={hovered === "hobby"}
-      />
-      {/* 層架上的模型 */}
-      <IsoCuboid origin={{ x: 0.12, y: 1.0, z: 1.05 }} size={{ x: 0.24, y: 0.24, z: 0.42 }} color="var(--blossom)" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.12, y: 1.55, z: 1.05 }} size={{ x: 0.24, y: 0.24, z: 0.5 }} color="var(--accent-strong)" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.12, y: 1.15, z: 2.1 }} size={{ x: 0.22, y: 0.22, z: 0.42 }} color="var(--status)" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.2, y: 3.0, z: 1.05 }} size={{ x: 0.5, y: 1.8, z: 1.9 }} color="var(--accent-dim)" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.3, y: 3.15, z: 1.05 }} size={{ x: 0.24, y: 0.24, z: 0.42 }} color="var(--blossom)" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.3, y: 3.75, z: 1.05 }} size={{ x: 0.24, y: 0.24, z: 0.5 }} color="var(--accent-strong)" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.3, y: 3.3, z: 2.1 }} size={{ x: 0.22, y: 0.22, z: 0.42 }} color="var(--status)" hovered={hovered === "hobby"} />
     </g>,
   );
 
-  // 筆電 + 文件（桌前） → 進行中作品
+  // 筆電 + 文件 → 進行中作品
   add(
     "wip",
-    2.95,
+    5.0,
     <g {...hotspotProps("wip")}>
-      <IsoCuboid origin={{ x: 0.6, y: 1.95, z: 1.05 }} size={{ x: 0.55, y: 0.38, z: 0.05 }} color="var(--ink)" hovered={hovered === "wip"} />
-      <IsoCuboid origin={{ x: 0.6, y: 1.95, z: 1.1 }} size={{ x: 0.55, y: 0.05, z: 0.34 }} color="var(--ink)" hovered={hovered === "wip"} />
-      {/* 桌上文件 */}
-      <IsoCuboid origin={{ x: 0.75, y: 2.4, z: 1.05 }} size={{ x: 0.35, y: 0.28, z: 0.03 }} color="var(--surface)" hovered={hovered === "wip"} />
+      <IsoCuboid origin={{ x: 0.85, y: 3.7, z: 1.05 }} size={{ x: 0.6, y: 0.42, z: 0.05 }} color="var(--ink)" hovered={hovered === "wip"} />
+      <IsoCuboid origin={{ x: 0.85, y: 3.7, z: 1.1 }} size={{ x: 0.6, y: 0.05, z: 0.36 }} color="var(--ink)" hovered={hovered === "wip"} />
+      <IsoCuboid origin={{ x: 0.95, y: 4.25, z: 1.05 }} size={{ x: 0.35, y: 0.3, z: 0.03 }} color="var(--surface)" hovered={hovered === "wip"} />
     </g>,
   );
 
-  // 電腦推車 + MSI 螢幕 → 即時動態
+  // msi 外接螢幕（電腦推車） → 即時動態
   add(
     "monitor",
-    4.15,
+    5.6,
     <g {...hotspotProps("monitor")}>
-      <IsoCuboid origin={{ x: 0, y: 3.1, z: 0 }} size={{ x: 1.0, y: 1.1, z: 1.05 }} color="var(--surface)" hovered={hovered === "monitor"} />
-      <IsoCuboid origin={{ x: 0.15, y: 3.35, z: 1.05 }} size={{ x: 0.7, y: 0.12, z: 0.78 }} color="var(--ink)" hovered={hovered === "monitor"} />
-      {/* 螢幕上的即時狀態小點 */}
+      <IsoCuboid origin={{ x: 1.8, y: 2.4, z: 0 }} size={{ x: 2.0, y: 0.8, z: 1.0 }} color="var(--surface)" hovered={hovered === "monitor"} />
+      <IsoCuboid origin={{ x: 2.4, y: 2.5, z: 1.0 }} size={{ x: 0.9, y: 0.12, z: 0.78 }} color="var(--ink)" hovered={hovered === "monitor"} />
       {(() => {
-        const p = pr(0.5, 3.35, 1.55);
-        return (
-          <>
-            <circle cx={p.x} cy={p.y} r={5} fill={STATUS_META[presence.status].color} />
-            {presence.game && (
-              <text x={p.x + 10} y={p.y + 4} fontSize={11} fontFamily="monospace" fill="var(--on-accent)">
-                ●
-              </text>
-            )}
-          </>
-        );
+        const p = pr(2.85, 2.5, 1.5);
+        return <circle cx={p.x} cy={p.y} r={5} fill={STATUS_META[presence.status].color} />;
       })()}
     </g>,
   );
 
-  // 床（地板，窗前）— 氣氛擺設
+  // 床（氣氛擺設）
   add(
     "bed",
-    4.9,
+    11.0,
     <g>
-      <IsoCuboid origin={{ x: 1.7, y: 0.6, z: 0 }} size={{ x: 2.6, y: 2.8, z: 0.55 }} color="#6f7d94" />
-      <IsoCuboid origin={{ x: 1.85, y: 0.75, z: 0.55 }} size={{ x: 0.95, y: 0.55, z: 0.22 }} color="#93a1bd" />
+      <IsoCuboid origin={{ x: 4.8, y: 2.8, z: 0 }} size={{ x: 4.8, y: 2.0, z: 0.55 }} color="#6f7d94" />
+      <IsoCuboid origin={{ x: 8.4, y: 2.95, z: 0.55 }} size={{ x: 0.9, y: 0.6, z: 0.22 }} color="#93a1bd" />
     </g>,
   );
 
-  // 床頭櫃 → 聯絡我
+  // 小櫃子（床頭櫃） → 聯絡我
   add(
     "contact",
-    5.4,
+    11.8,
     <g {...hotspotProps("contact")}>
-      <IsoCuboid origin={{ x: 4.5, y: 0, z: 0 }} size={{ x: 1.0, y: 0.9, z: 0.95 }} color="var(--accent-dim)" hovered={hovered === "contact"} />
-    </g>,
-  );
-
-  // 吊衣架 — 氣氛擺設
-  add(
-    "rack",
-    5.8,
-    <g>
-      <IsoCuboid origin={{ x: 0.1, y: 4.9, z: 0 }} size={{ x: 0.7, y: 0.12, z: 2.1 }} color="var(--line)" />
-      <IsoCuboid origin={{ x: 0, y: 4.75, z: 0.6 }} size={{ x: 0.9, y: 0.9, z: 1.35 }} color="var(--muted)" />
-    </g>,
-  );
-
-  // 高抽屜櫃（作品集，上面不放東西）
-  add(
-    "works",
-    7.0,
-    <g {...hotspotProps("works")}>
-      <IsoCuboid origin={{ x: 5.9, y: 0, z: 0 }} size={{ x: 1.3, y: 1.0, z: 2.5 }} color="var(--accent-dim)" hovered={hovered === "works"} />
+      <IsoCuboid origin={{ x: 8.8, y: 1.9, z: 0 }} size={{ x: 1.2, y: 0.9, z: 0.95 }} color="var(--accent-dim)" hovered={hovered === "contact"} />
     </g>,
   );
 
@@ -256,7 +254,7 @@ export default function RoomScene() {
   return (
     <div className="flex w-full flex-col items-center gap-4">
       <svg
-        viewBox="-300 -170 660 520"
+        viewBox="-240 -175 700 530"
         preserveAspectRatio="xMidYMid meet"
         className="h-[75vh] max-h-[780px] w-full max-w-[1400px]"
       >
