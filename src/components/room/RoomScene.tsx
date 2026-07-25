@@ -89,6 +89,29 @@ export default function RoomScene() {
     onClick: () => setOpen(id),
   });
 
+  // ── 家具細節輔助（畫在可見面上，讓純色塊看起來像家具） ──────
+  // 橫向凹槽：橫跨 右(+x) 與 前(+y) 面（抽屜分隔線）
+  const grooveH = (x: number, y: number, w: number, d: number, zL: number) => {
+    const a = pr(x + w, y, zL);
+    const b = pr(x + w, y + d, zL);
+    const c = pr(x, y + d, zL);
+    return `${a.x},${a.y} ${b.x},${b.y} ${c.x},${c.y}`;
+  };
+  // 前(+y)面上的直向凹槽（衣櫃對開門縫）
+  const grooveV = (xPos: number, yFront: number, z0: number, z1: number) => {
+    const a = pr(xPos, yFront, z0);
+    const b = pr(xPos, yFront, z1);
+    return `${a.x},${a.y} ${b.x},${b.y}`;
+  };
+  const groove = (key: string, points: string) => (
+    <polyline key={key} points={points} fill="none" stroke="#000" strokeOpacity={0.22} strokeWidth={1.4} />
+  );
+  // 把手小圓點（給 3D 座標）
+  const knob = (key: string, x: number, y: number, z: number) => {
+    const p = pr(x, y, z);
+    return <circle key={key} cx={p.x} cy={p.y} r={2.4} fill="#000" fillOpacity={0.34} />;
+  };
+
   // 每件家具帶一個 depth，小的先畫、大的後畫，讓等角視圖前後遮擋正確。
   const pieces: { key: string; depth: number; node: ReactNode }[] = [];
   const add = (key: string, depth: number, node: ReactNode) => pieces.push({ key, depth, node });
@@ -105,6 +128,10 @@ export default function RoomScene() {
     <g>
       <polygon points={wallR(0.1, 1.1, 0, 2.1)} fill="var(--accent-dim)" style={{ filter: "brightness(0.6)" }} />
       <polygon points={wallR(0.1, 1.1, 0, 2.1)} fill="none" stroke="var(--line)" strokeWidth={2} />
+      {/* 門板內框 */}
+      <polygon points={wallR(0.25, 0.95, 0.25, 1.9)} fill="none" stroke="#000" strokeOpacity={0.18} strokeWidth={1.4} />
+      {/* 門把 */}
+      {knob("door-k", 0.32, 0, 1.05)}
     </g>,
   );
 
@@ -131,26 +158,39 @@ export default function RoomScene() {
     </g>,
   );
 
-  // 衣櫃（高，氣氛擺設）
+  // 衣櫃（高，對開門，氣氛擺設）
   add(
     "wardrobe",
     5.4,
-    <IsoCuboid origin={{ x: 3.9, y: 0, z: 0 }} size={{ x: 2.1, y: 0.9, z: 2.7 }} color="var(--accent-dim)" />,
+    <g>
+      <IsoCuboid origin={{ x: 3.9, y: 0, z: 0 }} size={{ x: 2.1, y: 0.9, z: 2.7 }} color="var(--accent-dim)" />
+      {/* 對開門縫 */}
+      {groove("wd-v", grooveV(4.95, 0.9, 0.1, 2.6))}
+      {/* 門把 */}
+      {knob("wd-k1", 4.75, 0.9, 1.35)}
+      {knob("wd-k2", 5.15, 0.9, 1.35)}
+    </g>,
   );
 
-  // 白色四層小櫃子（氣氛擺設）
+  // 白色四層小櫃子（4 抽，氣氛擺設）
   add(
     "dresser",
     7.15,
-    <IsoCuboid origin={{ x: 6.2, y: 0, z: 0 }} size={{ x: 1.1, y: 0.8, z: 1.4 }} color="var(--surface)" />,
+    <g>
+      <IsoCuboid origin={{ x: 6.2, y: 0, z: 0 }} size={{ x: 1.1, y: 0.8, z: 1.4 }} color="var(--surface)" />
+      {[0.35, 0.7, 1.05].map((z) => groove(`dr-g${z}`, grooveH(6.2, 0, 1.1, 0.8, z)))}
+      {[0.175, 0.525, 0.875, 1.225].map((z) => knob(`dr-k${z}`, 6.75, 0.8, z))}
+    </g>,
   );
 
-  // 高木櫃 → 作品集（右後角）
+  // 高木櫃 → 作品集（右後角，多抽屜）
   add(
     "works",
     9.3,
     <g {...hotspotProps("works")}>
       <IsoCuboid origin={{ x: 7.5, y: 0, z: 0 }} size={{ x: 2.5, y: 1.1, z: 2.5 }} color="var(--accent-dim)" hovered={hovered === "works"} />
+      {[0.5, 1.0, 1.5, 2.0].map((z) => groove(`wk-g${z}`, grooveH(7.5, 0, 2.5, 1.1, z)))}
+      {[0.25, 0.75, 1.25, 1.75, 2.25].map((z) => knob(`wk-k${z}`, 8.75, 1.1, z))}
     </g>,
   );
 
@@ -192,7 +232,12 @@ export default function RoomScene() {
   add(
     "deskbase",
     4.2,
-    <IsoCuboid origin={{ x: 0.2, y: 3.0, z: 0 }} size={{ x: 1.4, y: 1.8, z: 1.05 }} color="var(--accent)" />,
+    <g>
+      <IsoCuboid origin={{ x: 0.2, y: 3.0, z: 0 }} size={{ x: 1.4, y: 1.8, z: 1.05 }} color="var(--accent)" />
+      {/* 桌面下抽屜 */}
+      {groove("desk-g", grooveH(0.2, 3.0, 1.4, 1.8, 0.55))}
+      {knob("desk-k", 1.6, 4.4, 0.78)}
+    </g>,
   );
 
   // 鋼彈層架 → 興趣收藏（貼左牆）
@@ -201,6 +246,9 @@ export default function RoomScene() {
     4.3,
     <g {...hotspotProps("hobby")}>
       <IsoCuboid origin={{ x: 0.2, y: 3.0, z: 1.05 }} size={{ x: 0.5, y: 1.8, z: 1.9 }} color="var(--accent-dim)" hovered={hovered === "hobby"} />
+      {/* 層板線 */}
+      {groove("hb-s1", grooveH(0.2, 3.0, 0.5, 1.8, 1.68))}
+      {groove("hb-s2", grooveH(0.2, 3.0, 0.5, 1.8, 2.35))}
       <IsoCuboid origin={{ x: 0.3, y: 3.15, z: 1.05 }} size={{ x: 0.24, y: 0.24, z: 0.42 }} color="var(--blossom)" hovered={hovered === "hobby"} />
       <IsoCuboid origin={{ x: 0.3, y: 3.75, z: 1.05 }} size={{ x: 0.24, y: 0.24, z: 0.5 }} color="var(--accent-strong)" hovered={hovered === "hobby"} />
       <IsoCuboid origin={{ x: 0.3, y: 3.3, z: 2.1 }} size={{ x: 0.22, y: 0.22, z: 0.42 }} color="var(--status)" hovered={hovered === "hobby"} />
@@ -224,14 +272,22 @@ export default function RoomScene() {
     5.6,
     <g {...hotspotProps("monitor")}>
       <IsoCuboid origin={{ x: 1.8, y: 2.4, z: 0 }} size={{ x: 2.0, y: 0.8, z: 1.0 }} color="var(--surface)" hovered={hovered === "monitor"} />
+      {/* 推車層板線 */}
+      {groove("mon-g", grooveH(1.8, 2.4, 2.0, 0.8, 0.45))}
       {/* 螢幕在桌子後緣 */}
       <IsoCuboid origin={{ x: 2.2, y: 2.45, z: 1.0 }} size={{ x: 0.9, y: 0.12, z: 0.78 }} color="var(--ink)" hovered={hovered === "monitor"} />
+      {/* 螢幕發光畫面（+y 面） */}
+      <polygon
+        points={pts(pr(2.28, 2.57, 1.1), pr(3.02, 2.57, 1.1), pr(3.02, 2.57, 1.68), pr(2.28, 2.57, 1.68))}
+        fill="#4f6f8f"
+        opacity={0.85}
+      />
       {/* 外接鍵盤 + 滑鼠在桌面 */}
       <IsoCuboid origin={{ x: 2.1, y: 2.9, z: 1.0 }} size={{ x: 1.1, y: 0.28, z: 0.05 }} color="var(--ink)" hovered={hovered === "monitor"} />
       <IsoCuboid origin={{ x: 3.35, y: 2.95, z: 1.0 }} size={{ x: 0.18, y: 0.28, z: 0.06 }} color="var(--ink)" hovered={hovered === "monitor"} />
       {(() => {
-        const p = pr(2.65, 2.45, 1.5);
-        return <circle cx={p.x} cy={p.y} r={5} fill={STATUS_META[presence.status].color} />;
+        const p = pr(2.65, 2.57, 1.55);
+        return <circle cx={p.x} cy={p.y} r={4} fill={STATUS_META[presence.status].color} />;
       })()}
     </g>,
   );
@@ -242,16 +298,33 @@ export default function RoomScene() {
     11.0,
     <g>
       <IsoCuboid origin={{ x: 4.8, y: 2.8, z: 0 }} size={{ x: 4.8, y: 2.0, z: 0.55 }} color="#6f7d94" />
-      <IsoCuboid origin={{ x: 8.4, y: 2.95, z: 0.55 }} size={{ x: 0.9, y: 0.6, z: 0.22 }} color="#93a1bd" />
+      {/* 床單格紋（頂面） */}
+      {[6.0, 7.2, 8.4].map((gx) => {
+        const a = pr(gx, 2.8, 0.55);
+        const b = pr(gx, 4.8, 0.55);
+        return <polyline key={`bx${gx}`} points={`${a.x},${a.y} ${b.x},${b.y}`} fill="none" stroke="#000" strokeOpacity={0.13} strokeWidth={1} />;
+      })}
+      {[3.4, 4.0, 4.6].map((gy) => {
+        const a = pr(4.8, gy, 0.55);
+        const b = pr(9.6, gy, 0.55);
+        return <polyline key={`by${gy}`} points={`${a.x},${a.y} ${b.x},${b.y}`} fill="none" stroke="#000" strokeOpacity={0.13} strokeWidth={1} />;
+      })}
+      {/* 腳邊摺被 */}
+      <IsoCuboid origin={{ x: 4.8, y: 2.85, z: 0.55 }} size={{ x: 0.85, y: 1.9, z: 0.16 }} color="#7f8ca6" />
+      {/* 枕頭 */}
+      <IsoCuboid origin={{ x: 8.4, y: 2.95, z: 0.55 }} size={{ x: 0.9, y: 0.6, z: 0.22 }} color="#adb8cd" />
     </g>,
   );
 
-  // 小櫃子（床頭櫃） → 聯絡我（在床頭後方，故深度需小於床，讓床蓋過重疊處）
+  // 小櫃子（床頭櫃，2 抽） → 聯絡我（在床頭後方，故深度需小於床，讓床蓋過重疊處）
   add(
     "contact",
     10.6,
     <g {...hotspotProps("contact")}>
       <IsoCuboid origin={{ x: 8.8, y: 1.9, z: 0 }} size={{ x: 1.2, y: 0.9, z: 0.95 }} color="var(--accent-dim)" hovered={hovered === "contact"} />
+      {groove("ct-g", grooveH(8.8, 1.9, 1.2, 0.9, 0.5))}
+      {knob("ct-k1", 9.4, 2.8, 0.25)}
+      {knob("ct-k2", 9.4, 2.8, 0.72)}
     </g>,
   );
 
