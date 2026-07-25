@@ -1,5 +1,6 @@
 "use client";
 
+/* eslint-disable @next/next/no-img-element */
 import { useDiscordPresence, STATUS_META } from "./useDiscordPresence";
 
 export default function DiscordPresenceCard() {
@@ -8,25 +9,39 @@ export default function DiscordPresenceCard() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-start gap-3 border-2 border-line bg-bg p-4">
-        <span className="mt-1 inline-block h-3 w-3 flex-none" style={{ background: meta.color }} />
+      <div className="flex items-center gap-3 border-2 border-line bg-bg p-4">
+        {p.avatarUrl ? (
+          <img
+            src={p.avatarUrl}
+            alt=""
+            width={48}
+            height={48}
+            className="h-12 w-12 flex-none border-2 border-line"
+          />
+        ) : (
+          <span className="h-12 w-12 flex-none border-2 border-line bg-surface" />
+        )}
         <div className="flex flex-col gap-0.5">
-          <span className="font-mono text-sm text-ink">Discord · {meta.label}</span>
+          <span className="flex items-center gap-2 font-bold text-ink">
+            {p.name}
+            <span className="inline-block h-2.5 w-2.5" style={{ background: meta.color }} />
+            <span className="font-mono text-xs font-normal text-muted">{meta.label}</span>
+          </span>
+          {p.customStatus && <span className="text-sm text-muted">{p.customStatus}</span>}
           {p.game ? (
             <span className="text-sm text-muted">
               正在遊玩 <span className="text-accent">{p.game}</span>
+              {p.detail && <span className="text-xs"> · {p.detail}</span>}
             </span>
           ) : (
             <span className="text-sm text-muted">目前沒有在玩遊戲</span>
           )}
-          {p.detail && <span className="text-xs text-muted">{p.detail}</span>}
         </div>
       </div>
 
       {!p.live && (
         <p className="border-2 border-dashed border-line p-3 font-mono text-xs text-muted">
-          目前是示範資料。加入 <span className="text-accent">discord.gg/lanyard</span>{" "}
-          並把你的 Discord 使用者 ID 給我，這裡就會換成你的即時上線狀態與正在玩的遊戲。
+          目前是示範資料，正在連線取得即時狀態⋯
         </p>
       )}
     </div>

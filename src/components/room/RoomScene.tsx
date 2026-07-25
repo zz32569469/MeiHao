@@ -28,9 +28,10 @@ const HOTSPOT_LABEL: Record<HotspotId, string> = {
 const HOTSPOT_ORDER: HotspotId[] = ["monitor", "hobby", "wip", "works", "contact", "about"];
 
 const HOBBY_ITEMS = [
-  { name: "鋼彈模型（範例一）", built: "年份待補", note: "之後補上這隻的入手／組裝時間與心得。" },
-  { name: "鋼彈模型（範例二）", built: "年份待補", note: "待補。" },
-  { name: "鋼彈模型（範例三）", built: "年份待補", note: "待補。" },
+  { name: "RG 攻擊鋼彈", built: "年份待補", note: "" },
+  { name: "HG 鋼彈", built: "年份待補", note: "" },
+  { name: "HG 風靈", built: "年份待補", note: "" },
+  { name: "RG 紅異端", built: "年份待補", note: "" },
 ];
 
 const WIP_ITEMS = [
@@ -332,7 +333,7 @@ export default function RoomScene() {
                       <span className="font-bold text-ink">{item.name}</span>
                       <span className="font-mono text-xs text-muted">{item.built}</span>
                     </div>
-                    <p className="mt-1 text-sm text-muted">{item.note}</p>
+                    {item.note && <p className="mt-1 text-sm text-muted">{item.note}</p>}
                   </li>
                 ))}
               </ul>
