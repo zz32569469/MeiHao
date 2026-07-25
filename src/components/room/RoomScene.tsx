@@ -246,10 +246,10 @@ export default function RoomScene() {
     </g>,
   );
 
-  // 小櫃子（床頭櫃） → 聯絡我（右緣，近鏡頭右牆）
+  // 小櫃子（床頭櫃） → 聯絡我（在床頭後方，故深度需小於床，讓床蓋過重疊處）
   add(
     "contact",
-    11.75,
+    10.6,
     <g {...hotspotProps("contact")}>
       <IsoCuboid origin={{ x: 8.8, y: 1.9, z: 0 }} size={{ x: 1.2, y: 0.9, z: 0.95 }} color="var(--accent-dim)" hovered={hovered === "contact"} />
     </g>,
