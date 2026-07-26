@@ -113,12 +113,6 @@ export default function RoomScene() {
     const c = pr(x, y + d, zL);
     return `${a.x},${a.y} ${b.x},${b.y} ${c.x},${c.y}`;
   };
-  // 前(+y)面上的直向凹槽（衣櫃對開門縫）
-  const grooveV = (xPos: number, yFront: number, z0: number, z1: number) => {
-    const a = pr(xPos, yFront, z0);
-    const b = pr(xPos, yFront, z1);
-    return `${a.x},${a.y} ${b.x},${b.y}`;
-  };
   const groove = (key: string, points: string) => (
     <polyline key={key} points={points} fill="none" stroke="#000" strokeOpacity={0.22} strokeWidth={1.4} />
   );
@@ -201,17 +195,30 @@ export default function RoomScene() {
     </g>,
   );
 
-  // 衣櫃（高，對開門，氣氛擺設）
+  // 衣櫃＝金屬層架（鐵架子）堆衣物（氣氛擺設）
   add(
     "wardrobe",
     5.4,
     <g>
-      <IsoCuboid origin={{ x: 3.9, y: 0, z: 0 }} size={{ x: 2.1, y: 0.9, z: 2.7 }} color="var(--accent-dim)" />
-      {/* 對開門縫 */}
-      {groove("wd-v", grooveV(4.95, 0.9, 0.1, 2.6))}
-      {/* 門把 */}
-      {knob("wd-k1", 4.75, 0.9, 1.35)}
-      {knob("wd-k2", 5.15, 0.9, 1.35)}
+      {/* 後立柱 */}
+      <IsoCuboid origin={{ x: 3.9, y: 0, z: 0 }} size={{ x: 0.06, y: 0.06, z: 2.7 }} color="#9aa0a8" />
+      <IsoCuboid origin={{ x: 5.94, y: 0, z: 0 }} size={{ x: 0.06, y: 0.06, z: 2.7 }} color="#9aa0a8" />
+      {/* 層板 x4 */}
+      {[0.08, 0.92, 1.72, 2.5].map((z) => (
+        <IsoCuboid key={`sh${z}`} origin={{ x: 3.9, y: 0, z }} size={{ x: 2.1, y: 0.9, z: 0.05 }} color="#aab0b8" />
+      ))}
+      {/* 各層衣物堆 */}
+      <IsoCuboid origin={{ x: 3.96, y: 0.06, z: 0.13 }} size={{ x: 0.96, y: 0.78, z: 0.62 }} color="#3a4a6a" />
+      <IsoCuboid origin={{ x: 4.96, y: 0.06, z: 0.13 }} size={{ x: 0.96, y: 0.78, z: 0.55 }} color="var(--muted)" />
+      <IsoCuboid origin={{ x: 3.96, y: 0.06, z: 0.97 }} size={{ x: 1.0, y: 0.78, z: 0.5 }} color="var(--ink)" />
+      <IsoCuboid origin={{ x: 5.0, y: 0.06, z: 0.97 }} size={{ x: 0.9, y: 0.78, z: 0.56 }} color="#5a6248" />
+      <IsoCuboid origin={{ x: 3.96, y: 0.06, z: 1.77 }} size={{ x: 1.0, y: 0.78, z: 0.5 }} color="var(--surface)" />
+      <IsoCuboid origin={{ x: 5.0, y: 0.06, z: 1.77 }} size={{ x: 0.9, y: 0.78, z: 0.46 }} color="var(--muted)" />
+      {/* 頂層折疊毯 */}
+      <IsoCuboid origin={{ x: 4.0, y: 0.06, z: 2.55 }} size={{ x: 1.6, y: 0.78, z: 0.22 }} color="#a89a86" />
+      {/* 前立柱（框在衣物前） */}
+      <IsoCuboid origin={{ x: 3.9, y: 0.84, z: 0 }} size={{ x: 0.06, y: 0.06, z: 2.7 }} color="#9aa0a8" />
+      <IsoCuboid origin={{ x: 5.94, y: 0.84, z: 0 }} size={{ x: 0.06, y: 0.06, z: 2.7 }} color="#9aa0a8" />
     </g>,
   );
 
