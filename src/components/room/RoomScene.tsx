@@ -276,13 +276,24 @@ export default function RoomScene() {
     </g>,
   );
 
-  // 掛包包的地方（壓扁、貼左牆）
+  // 掛包包的地方（左牆掛桿 + 吊著的背包，貼牆不突出）
   add(
     "rack",
     1.4,
     <g>
-      <IsoCuboid origin={{ x: 0, y: 0.9, z: 0 }} size={{ x: 0.15, y: 0.6, z: 2.0 }} color="var(--line)" />
-      <IsoCuboid origin={{ x: 0.05, y: 1.05, z: 0.8 }} size={{ x: 0.35, y: 0.5, z: 0.95 }} color="var(--muted)" />
+      {/* 牆上掛桿 */}
+      <IsoCuboid origin={{ x: 0, y: 0.8, z: 1.58 }} size={{ x: 0.06, y: 0.96, z: 0.07 }} color="var(--line)" />
+      {/* 黑色後背包 */}
+      <IsoCuboid origin={{ x: 0.04, y: 0.92, z: 0.64 }} size={{ x: 0.28, y: 0.38, z: 0.88 }} color="var(--ink)" />
+      {/* 背包前袋分線 */}
+      {line3("rack-bp", 0.32, 0.92, 1.0, 0.32, 1.3, 1.0)}
+      {/* 背包背帶（掛上桿） */}
+      {line3("rack-st1", 0.32, 1.0, 1.52, 0.32, 1.0, 1.62, 0.4)}
+      {line3("rack-st2", 0.32, 1.22, 1.52, 0.32, 1.22, 1.62, 0.4)}
+      {/* 棕色側背包（較小） */}
+      <IsoCuboid origin={{ x: 0.04, y: 1.38, z: 0.92 }} size={{ x: 0.22, y: 0.3, z: 0.58 }} color="#a9805a" />
+      {/* 側背包背帶 */}
+      {line3("rack-st3", 0.26, 1.52, 1.5, 0.26, 1.52, 1.62, 0.4)}
     </g>,
   );
 
