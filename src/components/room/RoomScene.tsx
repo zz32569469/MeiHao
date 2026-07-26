@@ -329,21 +329,21 @@ export default function RoomScene() {
           [4.4, 4.75, 1.14, 1.64],
         ] as const
       ).map(([y0, y1, z0, z1], i) => recess(`cb${i}`, 0.7, 0.42, y0, y1, z0, z1))}
-      {/* 各格小物件（依照片、小巧、坐在格底、不超出格子） */}
+      {/* 各格小物件（依照片、小巧、坐格底、往內靠、不突出） */}
       {/* 上排 */}
-      <IsoCuboid origin={{ x: 0.5, y: 3.2, z: 2.4 }} size={{ x: 0.05, y: 0.28, z: 0.32 }} color="var(--surface)" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.5, y: 3.8, z: 2.4 }} size={{ x: 0.14, y: 0.24, z: 0.26 }} color="var(--ink)" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.52, y: 4.4, z: 2.4 }} size={{ x: 0.1, y: 0.14, z: 0.34 }} color="var(--surface)" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.45, y: 3.2, z: 2.4 }} size={{ x: 0.05, y: 0.28, z: 0.32 }} color="var(--surface)" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.44, y: 3.8, z: 2.4 }} size={{ x: 0.12, y: 0.24, z: 0.26 }} color="var(--ink)" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.46, y: 4.4, z: 2.4 }} size={{ x: 0.1, y: 0.14, z: 0.34 }} color="var(--surface)" hovered={hovered === "hobby"} />
       {/* 中排 */}
-      <IsoCuboid origin={{ x: 0.48, y: 3.2, z: 1.76 }} size={{ x: 0.14, y: 0.18, z: 0.36 }} color="var(--status)" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.48, y: 3.6, z: 1.76 }} size={{ x: 0.14, y: 0.18, z: 0.4 }} color="#5f7391" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.5, y: 4.3, z: 1.76 }} size={{ x: 0.12, y: 0.14, z: 0.4 }} color="var(--surface)" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.44, y: 3.2, z: 1.76 }} size={{ x: 0.12, y: 0.18, z: 0.36 }} color="var(--status)" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.44, y: 3.6, z: 1.76 }} size={{ x: 0.12, y: 0.18, z: 0.4 }} color="#5f7391" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.45, y: 4.3, z: 1.76 }} size={{ x: 0.12, y: 0.14, z: 0.4 }} color="var(--surface)" hovered={hovered === "hobby"} />
       {/* 下排 */}
-      <IsoCuboid origin={{ x: 0.5, y: 3.18, z: 1.14 }} size={{ x: 0.16, y: 0.2, z: 0.3 }} color="#a9805a" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.5, y: 3.72, z: 1.14 }} size={{ x: 0.05, y: 0.14, z: 0.4 }} color="var(--accent-strong)" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.5, y: 3.9, z: 1.14 }} size={{ x: 0.05, y: 0.14, z: 0.34 }} color="var(--status)" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.5, y: 4.06, z: 1.14 }} size={{ x: 0.05, y: 0.14, z: 0.4 }} color="var(--accent-dim)" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.5, y: 4.5, z: 1.14 }} size={{ x: 0.12, y: 0.16, z: 0.24 }} color="var(--ink)" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.44, y: 3.18, z: 1.14 }} size={{ x: 0.14, y: 0.2, z: 0.3 }} color="#a9805a" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.46, y: 3.72, z: 1.14 }} size={{ x: 0.05, y: 0.14, z: 0.4 }} color="var(--accent-strong)" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.46, y: 3.9, z: 1.14 }} size={{ x: 0.05, y: 0.14, z: 0.34 }} color="var(--status)" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.46, y: 4.06, z: 1.14 }} size={{ x: 0.05, y: 0.14, z: 0.4 }} color="var(--accent-dim)" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.45, y: 4.5, z: 1.14 }} size={{ x: 0.12, y: 0.16, z: 0.24 }} color="var(--ink)" hovered={hovered === "hobby"} />
     </g>,
   );
 
