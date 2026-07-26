@@ -240,18 +240,35 @@ export default function RoomScene() {
     </g>,
   );
 
-  // 鋼彈層架 → 興趣收藏（貼左牆）
+  // 層架（有凹格） → 興趣收藏（貼左牆，格子開口朝 +x 面）
   add(
     "hobby",
     4.3,
     <g {...hotspotProps("hobby")}>
       <IsoCuboid origin={{ x: 0.2, y: 3.0, z: 1.05 }} size={{ x: 0.5, y: 1.8, z: 1.9 }} color="var(--accent-dim)" hovered={hovered === "hobby"} />
-      {/* 層板線 */}
-      {groove("hb-s1", grooveH(0.2, 3.0, 0.5, 1.8, 1.68))}
-      {groove("hb-s2", grooveH(0.2, 3.0, 0.5, 1.8, 2.35))}
-      <IsoCuboid origin={{ x: 0.3, y: 3.15, z: 1.05 }} size={{ x: 0.24, y: 0.24, z: 0.42 }} color="var(--blossom)" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.3, y: 3.75, z: 1.05 }} size={{ x: 0.24, y: 0.24, z: 0.5 }} color="var(--accent-strong)" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.3, y: 3.3, z: 2.1 }} size={{ x: 0.22, y: 0.22, z: 0.42 }} color="var(--status)" hovered={hovered === "hobby"} />
+      {/* 凹格（+x 面上的暗色凹格，格與格之間留木框當隔板） */}
+      {(
+        [
+          [3.06, 3.86, 1.12, 1.58],
+          [3.06, 3.86, 1.64, 2.18],
+          [3.06, 3.86, 2.24, 2.9],
+          [3.94, 4.74, 1.12, 1.92],
+          [3.94, 4.74, 1.98, 2.9],
+        ] as const
+      ).map(([y0, y1, z0, z1], i) => (
+        <polygon
+          key={`cb${i}`}
+          points={pts(pr(0.7, y0, z0), pr(0.7, y1, z0), pr(0.7, y1, z1), pr(0.7, y0, z1))}
+          fill="#000"
+          fillOpacity={0.34}
+        />
+      ))}
+      {/* 格子內的簡單物品（不用精細）：鋼彈、熊玩偶、水瓶、面紙 */}
+      <IsoCuboid origin={{ x: 0.3, y: 3.18, z: 1.64 }} size={{ x: 0.18, y: 0.22, z: 0.42 }} color="var(--status)" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.3, y: 3.3, z: 1.12 }} size={{ x: 0.16, y: 0.2, z: 0.4 }} color="#5f7391" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.32, y: 3.3, z: 2.24 }} size={{ x: 0.2, y: 0.22, z: 0.3 }} color="#a9805a" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.34, y: 4.1, z: 1.12 }} size={{ x: 0.12, y: 0.12, z: 0.5 }} color="var(--surface)" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.3, y: 4.05, z: 1.98 }} size={{ x: 0.22, y: 0.3, z: 0.2 }} color="var(--surface)" hovered={hovered === "hobby"} />
     </g>,
   );
 
