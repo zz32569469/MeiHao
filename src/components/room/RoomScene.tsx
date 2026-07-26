@@ -271,18 +271,21 @@ export default function RoomScene() {
   );
 
   // ── 地板 ─────────────────────────────────────────
-  // 筆電桌底座（桌面下有一排圓木把手小門櫃；鋼彈層架與筆電疊在上面）
+  // 筆電桌底座：桌面下有一排圓木把手小門，下面是開放腳空間（凹進去）
   add(
     "deskbase",
     4.2,
     <g>
       <IsoCuboid origin={{ x: 0.2, y: 3.0, z: 0 }} size={{ x: 1.4, y: 1.8, z: 1.05 }} color="var(--accent)" />
-      {/* 桌面下緣 */}
+      {/* 下方開放腳空間（凹槽做出深度） */}
+      {recess("desk-open", 1.6, 0.5, 3.12, 4.68, 0.06, 0.66)}
+      {/* 桌面下緣 + 小門排上下緣 */}
       {groove("desk-top", grooveH(0.2, 3.0, 1.4, 1.8, 0.92))}
-      {/* 門板分隔（+x 面，沿 z 直線） */}
-      {[3.45, 3.9, 4.35].map((y) => line3(`desk-v${y}`, 1.6, y, 0, 1.6, y, 0.9))}
-      {/* 圓木把手 */}
-      {[3.22, 3.67, 4.12, 4.57].map((y) => knob(`desk-k${y}`, 1.6, y, 0.46))}
+      {groove("desk-row", grooveH(0.2, 3.0, 1.4, 1.8, 0.7))}
+      {/* 小門分隔（+x 面，z 0.7→0.9） */}
+      {[3.45, 3.9, 4.35].map((y) => line3(`desk-v${y}`, 1.6, y, 0.7, 1.6, y, 0.9))}
+      {/* 圓木把手（在小門排上） */}
+      {[3.22, 3.67, 4.12, 4.57].map((y) => knob(`desk-k${y}`, 1.6, y, 0.8))}
     </g>,
   );
 
@@ -302,12 +305,7 @@ export default function RoomScene() {
           [3.94, 4.74, 1.98, 2.9],
         ] as const
       ).map(([y0, y1, z0, z1], i) => recess(`cb${i}`, 0.7, 0.42, y0, y1, z0, z1))}
-      {/* 格子內的簡單物品（坐在各格底板上、靠後擺放）：鋼彈、熊玩偶、水瓶、面紙 */}
-      <IsoCuboid origin={{ x: 0.5, y: 3.32, z: 1.12 }} size={{ x: 0.14, y: 0.16, z: 0.28 }} color="#5f7391" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.5, y: 3.3, z: 1.64 }} size={{ x: 0.15, y: 0.18, z: 0.36 }} color="var(--status)" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.5, y: 3.34, z: 2.24 }} size={{ x: 0.16, y: 0.18, z: 0.3 }} color="#a9805a" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.5, y: 4.14, z: 1.12 }} size={{ x: 0.12, y: 0.12, z: 0.58 }} color="var(--surface)" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.46, y: 4.06, z: 1.98 }} size={{ x: 0.2, y: 0.28, z: 0.2 }} color="var(--surface)" hovered={hovered === "hobby"} />
+      {/* 格子先留空，之後一件一件決定擺什麼 */}
     </g>,
   );
 
