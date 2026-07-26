@@ -13,7 +13,7 @@ export type RoomEntry = {
 export const ROOMS: RoomEntry[] = [
   {
     id: "2026",
-    label: "起點",
+    label: "起點 · v1",
     period: "2026.01 – 至今",
     Scene: RoomScene,
   },

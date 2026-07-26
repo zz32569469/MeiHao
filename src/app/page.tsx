@@ -15,10 +15,10 @@ export default function Home() {
         <div className="flex flex-col gap-1.5">
           <h1 className="font-serif text-3xl font-bold tracking-wide sm:text-4xl">MeihAO</h1>
           <p className="max-w-xl text-muted">
-            愛玩遊戲的軟體工程師，正在學習使用 AI 做自己想做的事情。
+            愛玩遊戲的軟體工程師。人生 build 中，持續整理。
           </p>
           <p className="font-mono text-xs tracking-wide text-muted">
-            點房間裡的家具逛逛。這是我的起點——之後每次搬家，都會在這裡留下那間房間。
+            點家具逛逛。每搬一次家，就在這裡 commit 一間房間。
           </p>
         </div>
       </header>
