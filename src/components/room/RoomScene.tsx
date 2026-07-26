@@ -111,6 +111,21 @@ export default function RoomScene() {
     const p = pr(x, y, z);
     return <circle key={key} cx={p.x} cy={p.y} r={2.4} fill="#000" fillOpacity={0.34} />;
   };
+  // 凹格：把層架 +x 面上的一格挖進去（後壁 + 四內壁，用面明暗做透視，不加陰影特效）。
+  // xF=前緣開口、xB=格子後壁，物品坐在 floor（z0）上、靠後擺就有「放進去」的立體感。
+  const recess = (key: string, xF: number, xB: number, y0: number, y1: number, z0: number, z1: number) => (
+    <g key={key}>
+      {/* 後壁 */}
+      <polygon points={pts(pr(xB, y0, z0), pr(xB, y1, z0), pr(xB, y1, z1), pr(xB, y0, z1))} fill="var(--accent-dim)" style={{ filter: "brightness(0.5)" }} />
+      {/* 上內壁 */}
+      <polygon points={pts(pr(xB, y0, z1), pr(xB, y1, z1), pr(xF, y1, z1), pr(xF, y0, z1))} fill="var(--accent-dim)" style={{ filter: "brightness(0.44)" }} />
+      {/* 兩側內壁 */}
+      <polygon points={pts(pr(xB, y0, z0), pr(xB, y0, z1), pr(xF, y0, z1), pr(xF, y0, z0))} fill="var(--accent-dim)" style={{ filter: "brightness(0.58)" }} />
+      <polygon points={pts(pr(xB, y1, z0), pr(xB, y1, z1), pr(xF, y1, z1), pr(xF, y1, z0))} fill="var(--accent-dim)" style={{ filter: "brightness(0.54)" }} />
+      {/* 底板（物品坐這） */}
+      <polygon points={pts(pr(xB, y0, z0), pr(xB, y1, z0), pr(xF, y1, z0), pr(xF, y0, z0))} fill="var(--accent-dim)" style={{ filter: "brightness(0.66)" }} />
+    </g>
+  );
 
   // 每件家具帶一個 depth，小的先畫、大的後畫，讓等角視圖前後遮擋正確。
   const pieces: { key: string; depth: number; node: ReactNode }[] = [];
@@ -246,7 +261,7 @@ export default function RoomScene() {
     4.3,
     <g {...hotspotProps("hobby")}>
       <IsoCuboid origin={{ x: 0.2, y: 3.0, z: 1.05 }} size={{ x: 0.5, y: 1.8, z: 1.9 }} color="var(--accent-dim)" hovered={hovered === "hobby"} />
-      {/* 凹格（+x 面上的暗色凹格，格與格之間留木框當隔板） */}
+      {/* 凹格（前緣 0.7 挖進到後壁 0.42），格與格之間留木框當隔板 */}
       {(
         [
           [3.06, 3.86, 1.12, 1.58],
@@ -255,20 +270,13 @@ export default function RoomScene() {
           [3.94, 4.74, 1.12, 1.92],
           [3.94, 4.74, 1.98, 2.9],
         ] as const
-      ).map(([y0, y1, z0, z1], i) => (
-        <polygon
-          key={`cb${i}`}
-          points={pts(pr(0.7, y0, z0), pr(0.7, y1, z0), pr(0.7, y1, z1), pr(0.7, y0, z1))}
-          fill="#000"
-          fillOpacity={0.34}
-        />
-      ))}
-      {/* 格子內的簡單物品（不用精細）：鋼彈、熊玩偶、水瓶、面紙 */}
-      <IsoCuboid origin={{ x: 0.3, y: 3.18, z: 1.64 }} size={{ x: 0.18, y: 0.22, z: 0.42 }} color="var(--status)" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.3, y: 3.3, z: 1.12 }} size={{ x: 0.16, y: 0.2, z: 0.4 }} color="#5f7391" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.32, y: 3.3, z: 2.24 }} size={{ x: 0.2, y: 0.22, z: 0.3 }} color="#a9805a" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.34, y: 4.1, z: 1.12 }} size={{ x: 0.12, y: 0.12, z: 0.5 }} color="var(--surface)" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.3, y: 4.05, z: 1.98 }} size={{ x: 0.22, y: 0.3, z: 0.2 }} color="var(--surface)" hovered={hovered === "hobby"} />
+      ).map(([y0, y1, z0, z1], i) => recess(`cb${i}`, 0.7, 0.42, y0, y1, z0, z1))}
+      {/* 格子內的簡單物品（坐在各格底板上、靠後擺放）：鋼彈、熊玩偶、水瓶、面紙 */}
+      <IsoCuboid origin={{ x: 0.46, y: 3.28, z: 1.12 }} size={{ x: 0.16, y: 0.2, z: 0.4 }} color="#5f7391" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.45, y: 3.26, z: 1.64 }} size={{ x: 0.18, y: 0.22, z: 0.46 }} color="var(--status)" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.48, y: 3.3, z: 2.24 }} size={{ x: 0.18, y: 0.2, z: 0.3 }} color="#a9805a" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.5, y: 4.14, z: 1.12 }} size={{ x: 0.12, y: 0.12, z: 0.58 }} color="var(--surface)" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.46, y: 4.06, z: 1.98 }} size={{ x: 0.2, y: 0.28, z: 0.2 }} color="var(--surface)" hovered={hovered === "hobby"} />
     </g>,
   );
 
