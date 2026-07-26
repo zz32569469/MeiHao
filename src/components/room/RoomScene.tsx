@@ -500,10 +500,11 @@ export default function RoomScene() {
 
   return (
     <div className="flex w-full flex-col items-center gap-4">
+      {/* 手機：以寬度撐滿、高度自動（不留上下空白）；桌機：以高度為準置中 */}
       <svg
         viewBox="-240 -175 700 530"
         preserveAspectRatio="xMidYMid meet"
-        className="h-[75vh] max-h-[780px] w-full max-w-[1400px]"
+        className="h-auto max-h-[80vh] w-full md:h-[74vh] md:w-auto"
       >
         <polygon points={rightWall} fill="var(--surface)" style={{ filter: "brightness(0.9)" }} />
         <polygon points={leftWall} fill="var(--surface)" style={{ filter: "brightness(0.78)" }} />
@@ -532,7 +533,7 @@ export default function RoomScene() {
             onMouseEnter={() => setHovered(id)}
             onMouseLeave={() => setHovered(null)}
             onClick={() => setOpen(id)}
-            className={`border-2 px-3 py-1.5 uppercase ${
+            className={`border-2 px-3.5 py-2 uppercase ${
               hovered === id ? "border-accent text-ink" : "border-line hover:text-ink"
             }`}
           >
