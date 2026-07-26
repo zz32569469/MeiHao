@@ -669,7 +669,7 @@ export default function RoomScene() {
 
             {open === "about" && (
               <p className="text-muted">
-                軟體工程師，愛玩遊戲。正在學用 AI 做自己想做的東西。其他的 // TODO。
+                軟體工程師，愛玩遊戲。正在學用 AI 做自己想做的東西。其他的之後慢慢補。
               </p>
             )}
           </div>
