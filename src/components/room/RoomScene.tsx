@@ -276,15 +276,30 @@ export default function RoomScene() {
       {groove("mon-g", grooveH(1.8, 2.4, 2.0, 0.8, 0.45))}
       {/* 螢幕在桌子後緣 */}
       <IsoCuboid origin={{ x: 2.2, y: 2.45, z: 1.0 }} size={{ x: 0.9, y: 0.12, z: 0.78 }} color="var(--ink)" hovered={hovered === "monitor"} />
-      {/* 螢幕發光畫面（+y 面） */}
+      {/* 螢幕發光畫面（+y 面）+ 程式碼線條 */}
       <polygon
         points={pts(pr(2.28, 2.57, 1.1), pr(3.02, 2.57, 1.1), pr(3.02, 2.57, 1.68), pr(2.28, 2.57, 1.68))}
-        fill="#4f6f8f"
-        opacity={0.85}
+        fill="#26333f"
       />
-      {/* 外接鍵盤 + 滑鼠在桌面 */}
+      {[
+        [1.58, 2.85],
+        [1.5, 2.74],
+        [1.42, 2.96],
+        [1.34, 2.66],
+        [1.26, 2.9],
+      ].map(([z, xEnd], i) => {
+        const a = pr(2.34, 2.57, z);
+        const b = pr(xEnd, 2.57, z);
+        return <polyline key={`sc${i}`} points={`${a.x},${a.y} ${b.x},${b.y}`} fill="none" stroke={i % 2 ? "#6f9ec4" : "#9ec9a8"} strokeOpacity={0.85} strokeWidth={1.4} />;
+      })}
+      {/* 動漫滑鼠墊（桌面 z=1.0） */}
+      <polygon points={pts(pr(2.0, 2.85, 1.0), pr(3.62, 2.85, 1.0), pr(3.62, 3.18, 1.0), pr(2.0, 3.18, 1.0))} fill="var(--blossom)" />
+      {/* 外接鍵盤 + 滑鼠在滑鼠墊上 */}
       <IsoCuboid origin={{ x: 2.1, y: 2.9, z: 1.0 }} size={{ x: 1.1, y: 0.28, z: 0.05 }} color="var(--ink)" hovered={hovered === "monitor"} />
       <IsoCuboid origin={{ x: 3.35, y: 2.95, z: 1.0 }} size={{ x: 0.18, y: 0.28, z: 0.06 }} color="var(--ink)" hovered={hovered === "monitor"} />
+      {/* 水瓶 + 面紙盒（桌面後緣） */}
+      <IsoCuboid origin={{ x: 1.92, y: 2.5, z: 1.0 }} size={{ x: 0.15, y: 0.15, z: 0.44 }} color="var(--surface)" />
+      <IsoCuboid origin={{ x: 3.36, y: 2.5, z: 1.0 }} size={{ x: 0.32, y: 0.2, z: 0.16 }} color="var(--surface)" />
       {(() => {
         const p = pr(2.65, 2.57, 1.55);
         return <circle cx={p.x} cy={p.y} r={4} fill={STATUS_META[presence.status].color} />;
@@ -361,6 +376,17 @@ export default function RoomScene() {
         <polygon points={rightWall} fill="var(--surface)" style={{ filter: "brightness(0.9)" }} />
         <polygon points={leftWall} fill="var(--surface)" style={{ filter: "brightness(0.78)" }} />
         <polygon points={floor} fill="var(--line)" style={{ filter: "brightness(0.72)" }} />
+        {/* 地板磁磚縫（畫在地板之後、家具之前，會被家具蓋住） */}
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((gx) => {
+          const a = pr(gx, 0, 0);
+          const b = pr(gx, ROOM_D, 0);
+          return <polyline key={`fx${gx}`} points={`${a.x},${a.y} ${b.x},${b.y}`} fill="none" stroke="#000" strokeOpacity={0.09} strokeWidth={1} />;
+        })}
+        {[1, 2, 3, 4].map((gy) => {
+          const a = pr(0, gy, 0);
+          const b = pr(ROOM_W, gy, 0);
+          return <polyline key={`fy${gy}`} points={`${a.x},${a.y} ${b.x},${b.y}`} fill="none" stroke="#000" strokeOpacity={0.09} strokeWidth={1} />;
+        })}
         {pieces.map((p) => (
           <g key={p.key}>{p.node}</g>
         ))}
