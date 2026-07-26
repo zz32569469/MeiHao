@@ -292,6 +292,25 @@ export default function RoomScene() {
     </g>,
   );
 
+  // 電腦椅（螢幕前的空格，面朝外接螢幕＝-y，椅背在靠鏡頭的 +y 側）
+  add(
+    "chair",
+    6.5,
+    <g>
+      {/* 椅腳（後腳先畫、前腳後畫） */}
+      <IsoCuboid origin={{ x: 2.5, y: 3.7, z: 0 }} size={{ x: 0.09, y: 0.09, z: 0.5 }} color="var(--accent-dim)" />
+      <IsoCuboid origin={{ x: 3.11, y: 3.7, z: 0 }} size={{ x: 0.09, y: 0.09, z: 0.5 }} color="var(--accent-dim)" />
+      <IsoCuboid origin={{ x: 2.5, y: 4.31, z: 0 }} size={{ x: 0.09, y: 0.09, z: 0.5 }} color="var(--accent-dim)" />
+      <IsoCuboid origin={{ x: 3.11, y: 4.31, z: 0 }} size={{ x: 0.09, y: 0.09, z: 0.5 }} color="var(--accent-dim)" />
+      {/* 椅面 */}
+      <IsoCuboid origin={{ x: 2.5, y: 3.7, z: 0.5 }} size={{ x: 0.7, y: 0.7, z: 0.1 }} color="var(--accent)" />
+      {/* 坐墊 */}
+      <IsoCuboid origin={{ x: 2.56, y: 3.76, z: 0.6 }} size={{ x: 0.58, y: 0.58, z: 0.07 }} color="var(--muted)" />
+      {/* 椅背 */}
+      <IsoCuboid origin={{ x: 2.5, y: 4.31, z: 0.6 }} size={{ x: 0.7, y: 0.09, z: 0.6 }} color="var(--accent-dim)" />
+    </g>,
+  );
+
   // 床（頭靠右牆側）
   add(
     "bed",
