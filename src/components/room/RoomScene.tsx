@@ -333,34 +333,23 @@ export default function RoomScene() {
     </g>,
   );
 
-  // 筆電（MSI Katana，螢幕面朝左牆；我們看到鍵盤面＋蓋背）→ 筆電規格 + 進行中作品
+  // 筆電（MSI Katana，螢幕面朝左牆；小巧精緻、看得出來就好）→ 筆電規格 + 進行中作品
   add(
     "wip",
     5.05,
     <g {...hotspotProps("wip")}>
-      {/* 鍵盤底座 */}
-      <IsoCuboid origin={{ x: 0.82, y: 3.66, z: 1.05 }} size={{ x: 0.66, y: 0.48, z: 0.06 }} color="var(--ink)" hovered={hovered === "wip"} />
-      {/* 鍵盤區（頂面 z=1.11 的暗色內凹） */}
-      <polygon points={pts(pr(0.94, 3.72, 1.111), pr(1.44, 3.72, 1.111), pr(1.44, 4.1, 1.111), pr(0.94, 4.1, 1.111))} fill="#000" fillOpacity={0.45} />
-      {/* RGB 鍵盤光（四排橫向鍵列） */}
-      {([
-        [3.78, "#e0556a"],
-        [3.87, "#6fae5a"],
-        [3.96, "#5a86c4"],
-        [4.05, "#c98a4a"],
-      ] as const).map(([yy, c], i) => {
-        const a = pr(0.98, yy, 1.113);
-        const b = pr(1.4, yy, 1.113);
-        return <polyline key={`kb${i}`} points={`${a.x},${a.y} ${b.x},${b.y}`} stroke={c} strokeOpacity={0.9} strokeWidth={2} strokeLinecap="round" />;
-      })}
+      {/* 鍵盤底座（短一點、寬一點點） */}
+      <IsoCuboid origin={{ x: 0.82, y: 3.62, z: 1.05 }} size={{ x: 0.5, y: 0.56, z: 0.06 }} color="var(--ink)" hovered={hovered === "wip"} />
+      {/* 鍵盤區（頂面暗色，簡單就好） */}
+      <polygon points={pts(pr(0.92, 3.68, 1.111), pr(1.2, 3.68, 1.111), pr(1.2, 4.12, 1.111), pr(0.92, 4.12, 1.111))} fill="#000" fillOpacity={0.4} />
       {/* 觸控板 */}
-      <polygon points={pts(pr(1.12, 3.86, 1.112), pr(1.32, 3.86, 1.112), pr(1.32, 3.98, 1.112), pr(1.12, 3.98, 1.112))} fill="#fff" fillOpacity={0.08} stroke="#000" strokeOpacity={0.2} strokeWidth={0.8} />
-      {/* 螢幕蓋（面朝牆 -x，看到蓋背 +x 面） */}
-      <IsoCuboid origin={{ x: 0.82, y: 3.66, z: 1.11 }} size={{ x: 0.06, y: 0.48, z: 0.42 }} color="var(--ink)" hovered={hovered === "wip"} />
-      {/* 蓋背 MSI 標記（一點紅） */}
+      <polygon points={pts(pr(1.22, 3.82, 1.112), pr(1.3, 3.82, 1.112), pr(1.3, 3.98, 1.112), pr(1.22, 3.98, 1.112))} fill="#fff" fillOpacity={0.1} stroke="#000" strokeOpacity={0.2} strokeWidth={0.8} />
+      {/* 螢幕蓋（面朝牆 -x） */}
+      <IsoCuboid origin={{ x: 0.82, y: 3.62, z: 1.11 }} size={{ x: 0.06, y: 0.56, z: 0.4 }} color="var(--ink)" hovered={hovered === "wip"} />
+      {/* 蓋背 MSI 標記 */}
       {(() => {
-        const p = pr(0.88, 3.9, 1.33);
-        return <circle cx={p.x} cy={p.y} r={2.6} fill="#c0392b" />;
+        const p = pr(0.88, 3.9, 1.31);
+        return <circle cx={p.x} cy={p.y} r={2.4} fill="#c0392b" />;
       })()}
     </g>,
   );
