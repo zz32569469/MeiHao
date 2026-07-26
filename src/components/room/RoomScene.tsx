@@ -17,9 +17,9 @@ const WALL_H = 3.4;
 type HotspotId = "monitor" | "hobby" | "wip" | "works" | "contact" | "about";
 
 const HOTSPOT_LABEL: Record<HotspotId, string> = {
-  monitor: "電腦",
+  monitor: "外接螢幕",
   hobby: "興趣收藏",
-  wip: "進行中作品",
+  wip: "筆電",
   works: "作品集",
   contact: "聯絡我",
   about: "關於我",
@@ -43,13 +43,20 @@ const WIP_ITEMS = [
   { title: "（下一個嘗試）", status: "構想中", note: "待補。" },
 ];
 
-// 電腦配置（規格）——2026-07-26 以 Win32 WMI 實機掃描填入
+// 筆電規格——2026-07-26 以 Win32 WMI 實機掃描填入
 const PC_SPECS: [string, string][] = [
   ["機型", "MSI Katana 15 B13VFK"],
   ["CPU", "Intel Core i5-13420H（8 核 / 12 緒）"],
   ["GPU", "GeForce RTX 4060 Laptop 8GB"],
   ["RAM", "32GB DDR5-5600（16GB×2）"],
   ["儲存", "2TB NVMe SSD（1TB×2, Gen4）"],
+];
+
+// 外接螢幕那組周邊（螢幕型號實機掃描，鍵鼠由使用者提供）
+const PERIPHERALS: [string, string][] = [
+  ["螢幕", "MSI G255F"],
+  ["鍵盤", "HyperX Alloy Core"],
+  ["滑鼠", "Logitech G502"],
 ];
 
 // ── 主題切換（跟 ThemeToggle 同一套 useSyncExternalStore） ──────────────
@@ -326,14 +333,35 @@ export default function RoomScene() {
     </g>,
   );
 
-  // 筆電 + 文件 → 進行中作品（螢幕面朝左牆）
+  // 筆電（MSI Katana，螢幕面朝左牆；我們看到鍵盤面＋蓋背）→ 筆電規格 + 進行中作品
   add(
     "wip",
     5.05,
     <g {...hotspotProps("wip")}>
-      <IsoCuboid origin={{ x: 0.85, y: 3.7, z: 1.05 }} size={{ x: 0.6, y: 0.42, z: 0.05 }} color="var(--ink)" hovered={hovered === "wip"} />
-      <IsoCuboid origin={{ x: 0.85, y: 3.7, z: 1.1 }} size={{ x: 0.05, y: 0.42, z: 0.36 }} color="var(--ink)" hovered={hovered === "wip"} />
-      <IsoCuboid origin={{ x: 0.95, y: 4.25, z: 1.05 }} size={{ x: 0.35, y: 0.3, z: 0.03 }} color="var(--surface)" hovered={hovered === "wip"} />
+      {/* 鍵盤底座 */}
+      <IsoCuboid origin={{ x: 0.82, y: 3.66, z: 1.05 }} size={{ x: 0.66, y: 0.48, z: 0.06 }} color="var(--ink)" hovered={hovered === "wip"} />
+      {/* 鍵盤區（頂面 z=1.11 的暗色內凹） */}
+      <polygon points={pts(pr(0.94, 3.72, 1.111), pr(1.44, 3.72, 1.111), pr(1.44, 4.1, 1.111), pr(0.94, 4.1, 1.111))} fill="#000" fillOpacity={0.45} />
+      {/* RGB 鍵盤光（四排橫向鍵列） */}
+      {([
+        [3.78, "#e0556a"],
+        [3.87, "#6fae5a"],
+        [3.96, "#5a86c4"],
+        [4.05, "#c98a4a"],
+      ] as const).map(([yy, c], i) => {
+        const a = pr(0.98, yy, 1.113);
+        const b = pr(1.4, yy, 1.113);
+        return <polyline key={`kb${i}`} points={`${a.x},${a.y} ${b.x},${b.y}`} stroke={c} strokeOpacity={0.9} strokeWidth={2} strokeLinecap="round" />;
+      })}
+      {/* 觸控板 */}
+      <polygon points={pts(pr(1.12, 3.86, 1.112), pr(1.32, 3.86, 1.112), pr(1.32, 3.98, 1.112), pr(1.12, 3.98, 1.112))} fill="#fff" fillOpacity={0.08} stroke="#000" strokeOpacity={0.2} strokeWidth={0.8} />
+      {/* 螢幕蓋（面朝牆 -x，看到蓋背 +x 面） */}
+      <IsoCuboid origin={{ x: 0.82, y: 3.66, z: 1.11 }} size={{ x: 0.06, y: 0.48, z: 0.42 }} color="var(--ink)" hovered={hovered === "wip"} />
+      {/* 蓋背 MSI 標記（一點紅） */}
+      {(() => {
+        const p = pr(0.88, 3.9, 1.33);
+        return <circle cx={p.x} cy={p.y} r={2.6} fill="#c0392b" />;
+      })()}
     </g>,
   );
 
@@ -531,9 +559,9 @@ export default function RoomScene() {
                   <DiscordPresenceCard />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <h3 className="font-mono text-xs tracking-wide text-muted uppercase">電腦配置</h3>
+                  <h3 className="font-mono text-xs tracking-wide text-muted uppercase">周邊</h3>
                   <dl className="border-2 border-line bg-bg">
-                    {PC_SPECS.map(([k, v], i) => (
+                    {PERIPHERALS.map(([k, v], i) => (
                       <div
                         key={k}
                         className={`flex justify-between gap-4 px-4 py-2 font-mono text-sm ${i > 0 ? "border-t border-line" : ""}`}
@@ -562,19 +590,38 @@ export default function RoomScene() {
             )}
 
             {open === "wip" && (
-              <ul className="flex flex-col gap-4">
-                {WIP_ITEMS.map((item) => (
-                  <li key={item.title} className="border-2 border-line bg-bg p-4">
-                    <div className="flex items-baseline justify-between gap-2">
-                      <span className="font-bold text-ink">{item.title}</span>
-                      <span className="border border-accent px-1.5 py-0.5 font-mono text-xs text-accent">
-                        {item.status}
-                      </span>
-                    </div>
-                    <p className="mt-1 text-sm text-muted">{item.note}</p>
-                  </li>
-                ))}
-              </ul>
+              <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-2">
+                  <h3 className="font-mono text-xs tracking-wide text-muted uppercase">筆電規格</h3>
+                  <dl className="border-2 border-line bg-bg">
+                    {PC_SPECS.map(([k, v], i) => (
+                      <div
+                        key={k}
+                        className={`flex justify-between gap-4 px-4 py-2 font-mono text-sm ${i > 0 ? "border-t border-line" : ""}`}
+                      >
+                        <dt className="text-muted">{k}</dt>
+                        <dd className="text-ink">{v}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <h3 className="font-mono text-xs tracking-wide text-muted uppercase">進行中作品</h3>
+                  <ul className="flex flex-col gap-4">
+                    {WIP_ITEMS.map((item) => (
+                      <li key={item.title} className="border-2 border-line bg-bg p-4">
+                        <div className="flex items-baseline justify-between gap-2">
+                          <span className="font-bold text-ink">{item.title}</span>
+                          <span className="border border-accent px-1.5 py-0.5 font-mono text-xs text-accent">
+                            {item.status}
+                          </span>
+                        </div>
+                        <p className="mt-1 text-sm text-muted">{item.note}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             )}
 
             {open === "works" && <GameShowcase />}
