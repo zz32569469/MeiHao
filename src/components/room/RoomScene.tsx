@@ -28,10 +28,10 @@ const HOTSPOT_LABEL: Record<HotspotId, string> = {
 const HOTSPOT_ORDER: HotspotId[] = ["monitor", "hobby", "wip", "works", "contact", "about"];
 
 const HOBBY_ITEMS = [
-  { name: "RG 攻擊鋼彈", built: "年份待補", note: "" },
-  { name: "HG 鋼彈", built: "年份待補", note: "" },
-  { name: "HG 風靈", built: "年份待補", note: "" },
-  { name: "RG 紅異端", built: "年份待補", note: "" },
+  { name: "RG 攻擊自由", built: "2023", note: "" },
+  { name: "HG 鋼彈", built: "2023", note: "" },
+  { name: "HG 風靈", built: "2025", note: "" },
+  { name: "RG 紅異端", built: "2025", note: "" },
 ];
 
 const WIP_ITEMS = [
