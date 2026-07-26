@@ -43,13 +43,13 @@ const WIP_ITEMS = [
   { title: "（下一個嘗試）", status: "構想中", note: "待補。" },
 ];
 
-// 電腦配置（規格）——待使用者提供精確 CPU/GPU/RAM 等後替換
+// 電腦配置（規格）——2026-07-26 以 Win32 WMI 實機掃描填入
 const PC_SPECS: [string, string][] = [
-  ["機型", "MSI Katana 15 B13V"],
-  ["CPU", "待補（Intel Core 13 代）"],
-  ["GPU", "待補（GeForce RTX）"],
-  ["RAM", "待補"],
-  ["儲存", "待補"],
+  ["機型", "MSI Katana 15 B13VFK"],
+  ["CPU", "Intel Core i5-13420H（8 核 / 12 緒）"],
+  ["GPU", "GeForce RTX 4060 Laptop 8GB"],
+  ["RAM", "32GB DDR5-5600（16GB×2）"],
+  ["儲存", "2TB NVMe SSD（1TB×2, Gen4）"],
 ];
 
 // ── 主題切換（跟 ThemeToggle 同一套 useSyncExternalStore） ──────────────
