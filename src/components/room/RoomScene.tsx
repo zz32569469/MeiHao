@@ -272,9 +272,9 @@ export default function RoomScene() {
         ] as const
       ).map(([y0, y1, z0, z1], i) => recess(`cb${i}`, 0.7, 0.42, y0, y1, z0, z1))}
       {/* 格子內的簡單物品（坐在各格底板上、靠後擺放）：鋼彈、熊玩偶、水瓶、面紙 */}
-      <IsoCuboid origin={{ x: 0.46, y: 3.28, z: 1.12 }} size={{ x: 0.16, y: 0.2, z: 0.4 }} color="#5f7391" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.45, y: 3.26, z: 1.64 }} size={{ x: 0.18, y: 0.22, z: 0.46 }} color="var(--status)" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.48, y: 3.3, z: 2.24 }} size={{ x: 0.18, y: 0.2, z: 0.3 }} color="#a9805a" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.5, y: 3.32, z: 1.12 }} size={{ x: 0.14, y: 0.16, z: 0.28 }} color="#5f7391" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.5, y: 3.3, z: 1.64 }} size={{ x: 0.15, y: 0.18, z: 0.36 }} color="var(--status)" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.5, y: 3.34, z: 2.24 }} size={{ x: 0.16, y: 0.18, z: 0.3 }} color="#a9805a" hovered={hovered === "hobby"} />
       <IsoCuboid origin={{ x: 0.5, y: 4.14, z: 1.12 }} size={{ x: 0.12, y: 0.12, z: 0.58 }} color="var(--surface)" hovered={hovered === "hobby"} />
       <IsoCuboid origin={{ x: 0.46, y: 4.06, z: 1.98 }} size={{ x: 0.2, y: 0.28, z: 0.2 }} color="var(--surface)" hovered={hovered === "hobby"} />
     </g>,
