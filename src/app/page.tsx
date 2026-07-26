@@ -1,5 +1,5 @@
 import Image from "next/image";
-import RoomScene from "@/components/room/RoomScene";
+import RoomGallery from "@/components/room/RoomGallery";
 import { BASE_PATH } from "@/lib/site-config";
 
 export default function Home() {
@@ -18,12 +18,12 @@ export default function Home() {
             愛玩遊戲的軟體工程師，正在學習使用 AI 做自己想做的事情。
           </p>
           <p className="font-mono text-xs tracking-wide text-muted">
-            點房間裡的家具，或畫面下方的按鈕，開始逛逛。
+            點房間裡的家具逛逛。這是我的起點——之後每次搬家，都會在這裡留下那間房間。
           </p>
         </div>
       </header>
 
-      <RoomScene />
+      <RoomGallery />
     </div>
   );
 }
