@@ -17,7 +17,7 @@ const WALL_H = 3.4;
 type HotspotId = "monitor" | "hobby" | "wip" | "works" | "contact" | "about";
 
 const HOTSPOT_LABEL: Record<HotspotId, string> = {
-  monitor: "即時動態",
+  monitor: "電腦",
   hobby: "興趣收藏",
   wip: "進行中作品",
   works: "作品集",
@@ -41,6 +41,15 @@ const WIP_ITEMS = [
     note: "把整個作品集做成可互動的房間，正在建家具與互動熱點。",
   },
   { title: "（下一個嘗試）", status: "構想中", note: "待補。" },
+];
+
+// 電腦配置（規格）——待使用者提供精確 CPU/GPU/RAM 等後替換
+const PC_SPECS: [string, string][] = [
+  ["機型", "MSI Katana 15 B13V"],
+  ["CPU", "待補（Intel Core 13 代）"],
+  ["GPU", "待補（GeForce RTX）"],
+  ["RAM", "待補"],
+  ["儲存", "待補"],
 ];
 
 // ── 主題切換（跟 ThemeToggle 同一套 useSyncExternalStore） ──────────────
@@ -515,7 +524,28 @@ export default function RoomScene() {
               </button>
             </div>
 
-            {open === "monitor" && <DiscordPresenceCard />}
+            {open === "monitor" && (
+              <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-2">
+                  <h3 className="font-mono text-xs tracking-wide text-muted uppercase">即時動態</h3>
+                  <DiscordPresenceCard />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <h3 className="font-mono text-xs tracking-wide text-muted uppercase">電腦配置</h3>
+                  <dl className="border-2 border-line bg-bg">
+                    {PC_SPECS.map(([k, v], i) => (
+                      <div
+                        key={k}
+                        className={`flex justify-between gap-4 px-4 py-2 font-mono text-sm ${i > 0 ? "border-t border-line" : ""}`}
+                      >
+                        <dt className="text-muted">{k}</dt>
+                        <dd className="text-ink">{v}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              </div>
+            )}
 
             {open === "hobby" && (
               <ul className="flex flex-col gap-4">
