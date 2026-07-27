@@ -37,6 +37,11 @@ const HOTSPOT_ANCHOR: Record<HotspotId, { x: number; y: number; z: number }> = {
   about: { x: 0, y: 2.4, z: 2.55 },
 };
 
+// 進場引導的順序：依錨點投影後的螢幕 x 排序，讓亮起像左→右掃過去
+const GUIDE_ORDER = [...HOTSPOT_ORDER].sort(
+  (a, b) => project(HOTSPOT_ANCHOR[a]).x - project(HOTSPOT_ANCHOR[b]).x,
+);
+
 const HOBBY_ITEMS = [
   { name: "RG 攻擊自由", built: "2023", note: "" },
   { name: "HG 鋼彈", built: "2023", note: "" },
@@ -90,6 +95,7 @@ function toggleTheme() {
 export default function RoomScene() {
   const [hovered, setHovered] = useState<HotspotId | "switch" | null>(null);
   const [open, setOpen] = useState<HotspotId | null>(null);
+  const [guide, setGuide] = useState<HotspotId | null>(null);
   const isDark = useSyncExternalStore(themeSubscribe, themeSnapshot, themeServerSnapshot);
   const presence = useDiscordPresence();
 
@@ -130,6 +136,17 @@ export default function RoomScene() {
     };
   }, []);
 
+  // 進場引導：掃描結束後，可點家具依左→右各亮一下宣告，之後畫面回歸乾淨
+  useEffect(() => {
+    const reduce = typeof matchMedia !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;
+    const start = 1250; // 等掃描（1150ms）揭示完再開始
+    const step = 240;
+    const timers = GUIDE_ORDER.map((id, i) => window.setTimeout(() => setGuide(id), start + i * step));
+    timers.push(window.setTimeout(() => setGuide(null), start + GUIDE_ORDER.length * step));
+    return () => timers.forEach(clearTimeout);
+  }, []);
+
   const pr = (x: number, y: number, z: number) => project({ x, y, z });
   const pts = (...arr: { x: number; y: number }[]) => arr.map((p) => `${p.x},${p.y}`).join(" ");
 
@@ -151,6 +168,9 @@ export default function RoomScene() {
     onMouseLeave: () => setHovered(null),
     onClick: () => setOpen(id),
   });
+
+  // 家具是否該高亮：懸停中，或正輪到它做進場引導
+  const lit = (id: HotspotId) => hovered === id || guide === id;
 
   // ── 家具細節輔助（畫在可見面上，讓純色塊看起來像家具） ──────
   // 橫向凹槽：橫跨 右(+x) 與 前(+y) 面（抽屜分隔線）
@@ -294,7 +314,7 @@ export default function RoomScene() {
     "works",
     9.3,
     <g {...hotspotProps("works")}>
-      <IsoCuboid origin={{ x: 7.5, y: 0, z: 0 }} size={{ x: 2.5, y: 1.1, z: 2.5 }} color="var(--accent-dim)" hovered={hovered === "works"} />
+      <IsoCuboid origin={{ x: 7.5, y: 0, z: 0 }} size={{ x: 2.5, y: 1.1, z: 2.5 }} color="var(--accent-dim)" hovered={lit("works")} />
       {/* 下方 3 大抽屜（橢圓凹槽拉手） */}
       {[0.53, 1.06, 1.6].map((z) => groove(`wk-g${z}`, grooveH(7.5, 0, 2.5, 1.1, z)))}
       {[0.27, 0.8, 1.33].map((z) => pull(`wk-p${z}`, 8.75, 1.1, z, 0.55, 0, 0))}
@@ -316,8 +336,8 @@ export default function RoomScene() {
       <polygon
         points={wallL(2.0, 2.8, 2.0, 2.8)}
         fill="var(--surface)"
-        stroke={hovered === "about" ? "var(--accent-strong)" : "var(--line)"}
-        strokeWidth={hovered === "about" ? 3 : 1.5}
+        stroke={lit("about") ? "var(--accent-strong)" : "var(--line)"}
+        strokeWidth={lit("about") ? 3 : 1.5}
       />
       {[
         [2.2, 1.85],
@@ -325,7 +345,7 @@ export default function RoomScene() {
         [2.35, 2.95],
       ].map(([sy, sz], i) => {
         const p = pr(0, sy, sz);
-        return <circle key={i} cx={p.x} cy={p.y} r={hovered === "about" ? 4 : 3} fill="var(--accent)" />;
+        return <circle key={i} cx={p.x} cy={p.y} r={lit("about") ? 4 : 3} fill="var(--accent)" />;
       })}
     </g>,
   );
@@ -377,7 +397,7 @@ export default function RoomScene() {
     "hobby",
     4.3,
     <g {...hotspotProps("hobby")}>
-      <IsoCuboid origin={{ x: 0.2, y: 3.0, z: 1.05 }} size={{ x: 0.5, y: 1.8, z: 1.9 }} color="var(--accent-dim)" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.2, y: 3.0, z: 1.05 }} size={{ x: 0.5, y: 1.8, z: 1.9 }} color="var(--accent-dim)" hovered={lit("hobby")} />
       {/* 凹格（依平面圖：3 排。前緣 0.7 挖進到後壁 0.42） */}
       {(
         [
@@ -396,19 +416,19 @@ export default function RoomScene() {
       ).map(([y0, y1, z0, z1], i) => recess(`cb${i}`, 0.7, 0.42, y0, y1, z0, z1))}
       {/* 各格小物件（貼近後壁、左右置中；頂端被格框稍微裁到沒關係） */}
       {/* 上排 */}
-      <IsoCuboid origin={{ x: 0.43, y: 3.17, z: 2.4 }} size={{ x: 0.05, y: 0.28, z: 0.32 }} color="var(--surface)" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.43, y: 3.79, z: 2.4 }} size={{ x: 0.12, y: 0.24, z: 0.26 }} color="var(--ink)" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.43, y: 4.42, z: 2.4 }} size={{ x: 0.1, y: 0.14, z: 0.34 }} color="var(--surface)" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.43, y: 3.17, z: 2.4 }} size={{ x: 0.05, y: 0.28, z: 0.32 }} color="var(--surface)" hovered={lit("hobby")} />
+      <IsoCuboid origin={{ x: 0.43, y: 3.79, z: 2.4 }} size={{ x: 0.12, y: 0.24, z: 0.26 }} color="var(--ink)" hovered={lit("hobby")} />
+      <IsoCuboid origin={{ x: 0.43, y: 4.42, z: 2.4 }} size={{ x: 0.1, y: 0.14, z: 0.34 }} color="var(--surface)" hovered={lit("hobby")} />
       {/* 中排 */}
-      <IsoCuboid origin={{ x: 0.43, y: 3.32, z: 1.76 }} size={{ x: 0.12, y: 0.18, z: 0.36 }} color="var(--status)" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.43, y: 3.6, z: 1.76 }} size={{ x: 0.12, y: 0.18, z: 0.38 }} color="#5f7391" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.43, y: 4.36, z: 1.76 }} size={{ x: 0.12, y: 0.14, z: 0.38 }} color="var(--surface)" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.43, y: 3.32, z: 1.76 }} size={{ x: 0.12, y: 0.18, z: 0.36 }} color="var(--status)" hovered={lit("hobby")} />
+      <IsoCuboid origin={{ x: 0.43, y: 3.6, z: 1.76 }} size={{ x: 0.12, y: 0.18, z: 0.38 }} color="#5f7391" hovered={lit("hobby")} />
+      <IsoCuboid origin={{ x: 0.43, y: 4.36, z: 1.76 }} size={{ x: 0.12, y: 0.14, z: 0.38 }} color="var(--surface)" hovered={lit("hobby")} />
       {/* 下排 */}
-      <IsoCuboid origin={{ x: 0.43, y: 3.17, z: 1.14 }} size={{ x: 0.14, y: 0.2, z: 0.3 }} color="#a9805a" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.43, y: 3.76, z: 1.14 }} size={{ x: 0.05, y: 0.14, z: 0.38 }} color="var(--accent-strong)" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.43, y: 3.9, z: 1.14 }} size={{ x: 0.05, y: 0.14, z: 0.34 }} color="var(--status)" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.43, y: 4.04, z: 1.14 }} size={{ x: 0.05, y: 0.14, z: 0.38 }} color="var(--accent-dim)" hovered={hovered === "hobby"} />
-      <IsoCuboid origin={{ x: 0.43, y: 4.49, z: 1.14 }} size={{ x: 0.12, y: 0.16, z: 0.24 }} color="var(--ink)" hovered={hovered === "hobby"} />
+      <IsoCuboid origin={{ x: 0.43, y: 3.17, z: 1.14 }} size={{ x: 0.14, y: 0.2, z: 0.3 }} color="#a9805a" hovered={lit("hobby")} />
+      <IsoCuboid origin={{ x: 0.43, y: 3.76, z: 1.14 }} size={{ x: 0.05, y: 0.14, z: 0.38 }} color="var(--accent-strong)" hovered={lit("hobby")} />
+      <IsoCuboid origin={{ x: 0.43, y: 3.9, z: 1.14 }} size={{ x: 0.05, y: 0.14, z: 0.34 }} color="var(--status)" hovered={lit("hobby")} />
+      <IsoCuboid origin={{ x: 0.43, y: 4.04, z: 1.14 }} size={{ x: 0.05, y: 0.14, z: 0.38 }} color="var(--accent-dim)" hovered={lit("hobby")} />
+      <IsoCuboid origin={{ x: 0.43, y: 4.49, z: 1.14 }} size={{ x: 0.12, y: 0.16, z: 0.24 }} color="var(--ink)" hovered={lit("hobby")} />
     </g>,
   );
 
@@ -418,13 +438,13 @@ export default function RoomScene() {
     5.05,
     <g {...hotspotProps("wip")}>
       {/* 鍵盤底座（短一點、寬一點點） */}
-      <IsoCuboid origin={{ x: 0.82, y: 3.62, z: 1.05 }} size={{ x: 0.5, y: 0.56, z: 0.06 }} color="var(--ink)" hovered={hovered === "wip"} />
+      <IsoCuboid origin={{ x: 0.82, y: 3.62, z: 1.05 }} size={{ x: 0.5, y: 0.56, z: 0.06 }} color="var(--ink)" hovered={lit("wip")} />
       {/* 鍵盤區（頂面暗色，簡單就好） */}
       <polygon points={pts(pr(0.92, 3.68, 1.111), pr(1.2, 3.68, 1.111), pr(1.2, 4.12, 1.111), pr(0.92, 4.12, 1.111))} fill="#000" fillOpacity={0.4} />
       {/* 觸控板 */}
       <polygon points={pts(pr(1.22, 3.82, 1.112), pr(1.3, 3.82, 1.112), pr(1.3, 3.98, 1.112), pr(1.22, 3.98, 1.112))} fill="#fff" fillOpacity={0.1} stroke="#000" strokeOpacity={0.2} strokeWidth={0.8} />
       {/* 螢幕蓋（面朝牆 -x） */}
-      <IsoCuboid origin={{ x: 0.82, y: 3.62, z: 1.11 }} size={{ x: 0.06, y: 0.56, z: 0.4 }} color="var(--ink)" hovered={hovered === "wip"} />
+      <IsoCuboid origin={{ x: 0.82, y: 3.62, z: 1.11 }} size={{ x: 0.06, y: 0.56, z: 0.4 }} color="var(--ink)" hovered={lit("wip")} />
     </g>,
   );
 
@@ -433,11 +453,11 @@ export default function RoomScene() {
     "monitor",
     5.6,
     <g {...hotspotProps("monitor")}>
-      <IsoCuboid origin={{ x: 1.8, y: 2.4, z: 0 }} size={{ x: 2.0, y: 0.8, z: 1.0 }} color="var(--surface)" hovered={hovered === "monitor"} />
+      <IsoCuboid origin={{ x: 1.8, y: 2.4, z: 0 }} size={{ x: 2.0, y: 0.8, z: 1.0 }} color="var(--surface)" hovered={lit("monitor")} />
       {/* 推車層板線 */}
       {groove("mon-g", grooveH(1.8, 2.4, 2.0, 0.8, 0.45))}
       {/* 螢幕在桌子後緣 */}
-      <IsoCuboid origin={{ x: 2.2, y: 2.45, z: 1.0 }} size={{ x: 0.9, y: 0.12, z: 0.78 }} color="var(--ink)" hovered={hovered === "monitor"} />
+      <IsoCuboid origin={{ x: 2.2, y: 2.45, z: 1.0 }} size={{ x: 0.9, y: 0.12, z: 0.78 }} color="var(--ink)" hovered={lit("monitor")} />
       {/* 螢幕發光畫面（+y 面）+ 程式碼線條 */}
       <polygon
         points={pts(pr(2.28, 2.57, 1.1), pr(3.02, 2.57, 1.1), pr(3.02, 2.57, 1.68), pr(2.28, 2.57, 1.68))}
@@ -457,8 +477,8 @@ export default function RoomScene() {
       {/* 動漫滑鼠墊（桌面 z=1.0） */}
       <polygon points={pts(pr(2.0, 2.85, 1.0), pr(3.62, 2.85, 1.0), pr(3.62, 3.18, 1.0), pr(2.0, 3.18, 1.0))} fill="var(--blossom)" />
       {/* 外接鍵盤 + 滑鼠在滑鼠墊上 */}
-      <IsoCuboid origin={{ x: 2.1, y: 2.9, z: 1.0 }} size={{ x: 1.1, y: 0.28, z: 0.05 }} color="var(--ink)" hovered={hovered === "monitor"} />
-      <IsoCuboid origin={{ x: 3.35, y: 2.95, z: 1.0 }} size={{ x: 0.18, y: 0.28, z: 0.06 }} color="var(--ink)" hovered={hovered === "monitor"} />
+      <IsoCuboid origin={{ x: 2.1, y: 2.9, z: 1.0 }} size={{ x: 1.1, y: 0.28, z: 0.05 }} color="var(--ink)" hovered={lit("monitor")} />
+      <IsoCuboid origin={{ x: 3.35, y: 2.95, z: 1.0 }} size={{ x: 0.18, y: 0.28, z: 0.06 }} color="var(--ink)" hovered={lit("monitor")} />
       {/* 水瓶 + 面紙盒（桌面後緣） */}
       <IsoCuboid origin={{ x: 1.92, y: 2.5, z: 1.0 }} size={{ x: 0.15, y: 0.15, z: 0.44 }} color="var(--surface)" />
       <IsoCuboid origin={{ x: 3.36, y: 2.5, z: 1.0 }} size={{ x: 0.32, y: 0.2, z: 0.16 }} color="var(--surface)" />
@@ -529,7 +549,7 @@ export default function RoomScene() {
     "contact",
     10.6,
     <g {...hotspotProps("contact")}>
-      <IsoCuboid origin={{ x: 8.8, y: 1.9, z: 0 }} size={{ x: 1.2, y: 0.9, z: 0.95 }} color="var(--accent-dim)" hovered={hovered === "contact"} />
+      <IsoCuboid origin={{ x: 8.8, y: 1.9, z: 0 }} size={{ x: 1.2, y: 0.9, z: 0.95 }} color="var(--accent-dim)" hovered={lit("contact")} />
       {groove("ct-g", grooveH(8.8, 1.9, 1.2, 0.9, 0.5))}
       {pull("ct-p1", 9.4, 2.8, 0.26, 0.42, 0, 0)}
       {pull("ct-p2", 9.4, 2.8, 0.72, 0.42, 0, 0)}
@@ -562,28 +582,6 @@ export default function RoomScene() {
             {pieces.map((p) => (
               <g key={p.key}>{p.node}</g>
             ))}
-            {/* 可點提示標記：淡淡的圈，進場後呼吸兩下宣告哪些家具可互動，懸停時加粗 */}
-            {HOTSPOT_ORDER.map((id) => {
-              const a = HOTSPOT_ANCHOR[id];
-              const p = pr(a.x, a.y, a.z);
-              const on = hovered === id;
-              return (
-                <g key={`mk-${id}`} {...hotspotProps(id)}>
-                  <circle cx={p.x} cy={p.y} r={13} fill="transparent" />
-                  <circle
-                    className="room-marker room-marker--announce"
-                    cx={p.x}
-                    cy={p.y}
-                    r={on ? 6.5 : 5}
-                    fill="none"
-                    stroke="var(--accent-strong)"
-                    strokeWidth={on ? 2.6 : 1.6}
-                    style={{ opacity: on ? 1 : 0.5 }}
-                  />
-                  <circle cx={p.x} cy={p.y} r={1.7} fill="var(--accent-strong)" style={{ opacity: on ? 1 : 0.72 }} />
-                </g>
-              );
-            })}
           </svg>
         </div>
         <div ref={overlayRef} className="pointer-events-none absolute inset-0 overflow-hidden" />

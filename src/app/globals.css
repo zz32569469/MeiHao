@@ -80,26 +80,6 @@ body {
   scroll-margin-top: calc(var(--frame-margin) + 1rem);
 }
 
-/* 房間可點提示：進場掃描結束後做兩下「呼吸」宣告哪些家具可點，之後靜置成淡淡的圈 */
-.room-marker {
-  transform-box: fill-box;
-  transform-origin: center;
-}
-@keyframes roomMarkerAnnounce {
-  0%,
-  100% {
-    opacity: 0.5;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.95;
-    transform: scale(1.55);
-  }
-}
-.room-marker--announce {
-  animation: roomMarkerAnnounce 1.3s ease-in-out 1.25s 2;
-}
-
 /* 外接螢幕上的 Discord 狀態點：緩慢呼吸，表示「在線」 */
 .discord-dot {
   transform-box: fill-box;
@@ -127,7 +107,6 @@ body {
     transition: none;
   }
 
-  .room-marker--announce,
   .discord-dot {
     animation: none;
   }
