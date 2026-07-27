@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } fro
 import IsoCuboid from "./IsoCuboid";
 import { project } from "./iso";
 import GameShowcase from "@/components/games/GameShowcase";
-import EmailCopy from "@/components/EmailCopy";
+import { EMAIL } from "@/components/EmailPanel";
 import DiscordPresenceCard from "./DiscordPresenceCard";
 import { useDiscordPresence, STATUS_META } from "./useDiscordPresence";
 
@@ -731,7 +731,8 @@ export default function RoomScene() {
             {open === "contact" && (
               <ul className="flex flex-col gap-2 font-mono text-sm">
                 <li>
-                  <EmailCopy />
+                  <span className="text-muted">[ EMAIL ]</span>{" "}
+                  <span className="select-all text-ink">{EMAIL}</span>
                 </li>
                 <li>
                   <a

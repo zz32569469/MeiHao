@@ -1,5 +1,5 @@
 import VisitorCounter from "./VisitorCounter";
-import EmailCopy from "./EmailCopy";
+import EmailPanel from "./EmailPanel";
 
 const links = [{ label: "GITHUB", href: "https://github.com/zz32569469" }];
 
@@ -13,7 +13,7 @@ export default function Footer() {
         <VisitorCounter />
         <ul className="flex flex-wrap gap-x-5 gap-y-2 font-mono text-xs tracking-wide">
           <li>
-            <EmailCopy />
+            <EmailPanel />
           </li>
           {links.map((link) => (
             <li key={link.label}>
