@@ -27,6 +27,26 @@ const HOTSPOT_LABEL: Record<HotspotId, string> = {
 
 const HOTSPOT_ORDER: HotspotId[] = ["monitor", "hobby", "wip", "works", "contact", "about"];
 
+// 每個熱點在場景裡的錨點（可點提示標記 + 懸停浮標定位用），取各家具的視覺頂/前緣
+const HOTSPOT_ANCHOR: Record<HotspotId, { x: number; y: number; z: number }> = {
+  monitor: { x: 2.65, y: 2.53, z: 1.78 },
+  hobby: { x: 0.55, y: 3.9, z: 3.05 },
+  wip: { x: 1.0, y: 3.9, z: 1.62 },
+  works: { x: 8.75, y: 0.55, z: 2.62 },
+  contact: { x: 9.4, y: 2.3, z: 1.15 },
+  about: { x: 0, y: 2.4, z: 2.55 },
+};
+
+// 懸停時浮標的第二行提示（第一行是 HOTSPOT_LABEL）
+const HOTSPOT_HINT: Record<HotspotId, string> = {
+  monitor: "即時動態・周邊",
+  hobby: "鋼彈收藏",
+  wip: "規格・進行中作品",
+  works: "作品集・小遊戲",
+  contact: "Email・GitHub",
+  about: "關於我",
+};
+
 const HOBBY_ITEMS = [
   { name: "RG 攻擊自由", built: "2023", note: "" },
   { name: "HG 鋼彈", built: "2023", note: "" },
@@ -459,7 +479,7 @@ export default function RoomScene() {
       <IsoCuboid origin={{ x: 3.36, y: 2.5, z: 1.0 }} size={{ x: 0.32, y: 0.2, z: 0.16 }} color="var(--surface)" />
       {(() => {
         const p = pr(2.65, 2.57, 1.55);
-        return <circle cx={p.x} cy={p.y} r={4} fill={STATUS_META[presence.status].color} />;
+        return <circle className="discord-dot" cx={p.x} cy={p.y} r={4} fill={STATUS_META[presence.status].color} />;
       })()}
     </g>,
   );
@@ -557,9 +577,49 @@ export default function RoomScene() {
             {pieces.map((p) => (
               <g key={p.key}>{p.node}</g>
             ))}
+            {/* 可點提示標記：淡淡的圈，進場後呼吸兩下宣告哪些家具可互動，懸停時加粗 */}
+            {HOTSPOT_ORDER.map((id) => {
+              const a = HOTSPOT_ANCHOR[id];
+              const p = pr(a.x, a.y, a.z);
+              const on = hovered === id;
+              return (
+                <g key={`mk-${id}`} {...hotspotProps(id)}>
+                  <circle cx={p.x} cy={p.y} r={13} fill="transparent" />
+                  <circle
+                    className="room-marker room-marker--announce"
+                    cx={p.x}
+                    cy={p.y}
+                    r={on ? 6.5 : 5}
+                    fill="none"
+                    stroke="var(--accent-strong)"
+                    strokeWidth={on ? 2.6 : 1.6}
+                    style={{ opacity: on ? 1 : 0.5 }}
+                  />
+                  <circle cx={p.x} cy={p.y} r={1.7} fill="var(--accent-strong)" style={{ opacity: on ? 1 : 0.72 }} />
+                </g>
+              );
+            })}
           </svg>
         </div>
         <div ref={overlayRef} className="pointer-events-none absolute inset-0 overflow-hidden" />
+        {/* 懸停浮標：滑到家具（或下方按鈕）時，在該家具上方浮出名稱與一句提示 */}
+        {hovered && hovered !== "switch" && (() => {
+          const a = HOTSPOT_ANCHOR[hovered];
+          const p = pr(a.x, a.y, a.z);
+          const left = ((p.x + 240) / 700) * 100;
+          const top = ((p.y + 175) / 530) * 100;
+          return (
+            <div
+              className="pointer-events-none absolute z-10 flex -translate-x-1/2 -translate-y-full flex-col items-center gap-0.5 whitespace-nowrap pb-2"
+              style={{ left: `${left}%`, top: `${top}%` }}
+            >
+              <span className="border-2 border-accent bg-bg px-2 py-0.5 font-mono text-xs font-bold tracking-wide text-ink">
+                {HOTSPOT_LABEL[hovered]}
+              </span>
+              <span className="font-mono text-[10px] tracking-wide text-muted">{HOTSPOT_HINT[hovered]}</span>
+            </div>
+          );
+        })()}
       </div>
 
       <div className="flex flex-wrap justify-center gap-2 font-mono text-xs tracking-wide text-muted">
