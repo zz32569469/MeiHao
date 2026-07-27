@@ -730,9 +730,8 @@ export default function RoomScene() {
             {open === "contact" && (
               <ul className="flex flex-col gap-2 font-mono text-sm">
                 <li>
-                  <a href="mailto:zz32569469@gmail.com" className="text-accent hover:text-accent-strong">
-                    [ EMAIL ] zz32569469@gmail.com
-                  </a>
+                  <span className="text-muted">[ EMAIL ]</span>{" "}
+                  <span className="select-all text-ink">zz32569469@gmail.com</span>
                 </li>
                 <li>
                   <a

@@ -1,9 +1,9 @@
 import VisitorCounter from "./VisitorCounter";
 
-const links = [
-  { label: "EMAIL", href: "mailto:zz32569469@gmail.com" },
-  { label: "GITHUB", href: "https://github.com/zz32569469" },
-];
+// Email 只顯示地址，不做 mailto 連結（避免點到就開啟郵件軟體）
+const EMAIL = "zz32569469@gmail.com";
+
+const links = [{ label: "GITHUB", href: "https://github.com/zz32569469" }];
 
 export default function Footer() {
   return (
@@ -14,6 +14,9 @@ export default function Footer() {
         </p>
         <VisitorCounter />
         <ul className="flex flex-wrap gap-x-5 gap-y-2 font-mono text-xs tracking-wide">
+          <li className="text-muted">
+            [ EMAIL ] <span className="select-all text-ink">{EMAIL}</span>
+          </li>
           {links.map((link) => (
             <li key={link.label}>
               <a
