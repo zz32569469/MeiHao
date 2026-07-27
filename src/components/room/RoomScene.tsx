@@ -37,16 +37,6 @@ const HOTSPOT_ANCHOR: Record<HotspotId, { x: number; y: number; z: number }> = {
   about: { x: 0, y: 2.4, z: 2.55 },
 };
 
-// 懸停時浮標的第二行提示（第一行是 HOTSPOT_LABEL）
-const HOTSPOT_HINT: Record<HotspotId, string> = {
-  monitor: "即時動態・周邊",
-  hobby: "鋼彈收藏",
-  wip: "規格・進行中作品",
-  works: "作品集・小遊戲",
-  contact: "Email・GitHub",
-  about: "關於我",
-};
-
 const HOBBY_ITEMS = [
   { name: "RG 攻擊自由", built: "2023", note: "" },
   { name: "HG 鋼彈", built: "2023", note: "" },
@@ -435,11 +425,6 @@ export default function RoomScene() {
       <polygon points={pts(pr(1.22, 3.82, 1.112), pr(1.3, 3.82, 1.112), pr(1.3, 3.98, 1.112), pr(1.22, 3.98, 1.112))} fill="#fff" fillOpacity={0.1} stroke="#000" strokeOpacity={0.2} strokeWidth={0.8} />
       {/* 螢幕蓋（面朝牆 -x） */}
       <IsoCuboid origin={{ x: 0.82, y: 3.62, z: 1.11 }} size={{ x: 0.06, y: 0.56, z: 0.4 }} color="var(--ink)" hovered={hovered === "wip"} />
-      {/* 蓋背 MSI 標記 */}
-      {(() => {
-        const p = pr(0.88, 3.9, 1.31);
-        return <circle cx={p.x} cy={p.y} r={2.4} fill="#c0392b" />;
-      })()}
     </g>,
   );
 
@@ -610,13 +595,12 @@ export default function RoomScene() {
           const top = ((p.y + 175) / 530) * 100;
           return (
             <div
-              className="pointer-events-none absolute z-10 flex -translate-x-1/2 -translate-y-full flex-col items-center gap-0.5 whitespace-nowrap pb-2"
+              className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full whitespace-nowrap pb-2"
               style={{ left: `${left}%`, top: `${top}%` }}
             >
               <span className="border-2 border-accent bg-bg px-2 py-0.5 font-mono text-xs font-bold tracking-wide text-ink">
                 {HOTSPOT_LABEL[hovered]}
               </span>
-              <span className="font-mono text-[10px] tracking-wide text-muted">{HOTSPOT_HINT[hovered]}</span>
             </div>
           );
         })()}
