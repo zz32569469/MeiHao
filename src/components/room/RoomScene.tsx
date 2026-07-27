@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useSyncExternalStore, type ReactNode } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import IsoCuboid from "./IsoCuboid";
 import { project } from "./iso";
 import GameShowcase from "@/components/games/GameShowcase";
@@ -82,6 +82,46 @@ export default function RoomScene() {
   const [open, setOpen] = useState<HotspotId | null>(null);
   const isDark = useSyncExternalStore(themeSubscribe, themeSnapshot, themeServerSnapshot);
   const presence = useDiscordPresence();
+
+  // 進場：漸快的接力掃描線逐組點亮房間（revealed = 已點亮的組數 0..6）
+  const [revealed, setRevealed] = useState(0);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const overlay = overlayRef.current;
+    if (!overlay) return;
+    const timers: number[] = [];
+    const reduce = typeof matchMedia !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) {
+      timers.push(window.setTimeout(() => setRevealed(6), 0));
+      return () => timers.forEach(clearTimeout);
+    }
+    const durs = [520, 440, 380, 330, 290, 260]; // 漸快
+    let t = 0;
+    durs.forEach((dur, k) => {
+      timers.push(
+        window.setTimeout(() => {
+          const mover = document.createElement("div");
+          mover.style.cssText = "position:absolute;inset:0;";
+          const bar = document.createElement("div");
+          bar.style.cssText =
+            "position:absolute;left:0;right:0;top:0;height:3px;background:var(--accent-strong);box-shadow:0 0 16px 4px var(--accent-strong);";
+          mover.appendChild(bar);
+          overlay.appendChild(mover);
+          mover.animate(
+            [{ transform: "translateY(-4px)" }, { transform: "translateY(100%)" }],
+            { duration: dur, easing: "linear" },
+          );
+          timers.push(window.setTimeout(() => setRevealed((r) => Math.max(r, k + 1)), dur * 0.55));
+          timers.push(window.setTimeout(() => mover.remove(), dur + 80));
+        }, t),
+      );
+      t += dur * 0.86; // 上一條快到底時下一條才啟動
+    });
+    return () => {
+      timers.forEach(clearTimeout);
+      overlay.innerHTML = "";
+    };
+  }, []);
 
   const pr = (x: number, y: number, z: number) => project({ x, y, z });
   const pts = (...arr: { x: number; y: number }[]) => arr.map((p) => `${p.x},${p.y}`).join(" ");
@@ -500,30 +540,37 @@ export default function RoomScene() {
 
   return (
     <div className="flex w-full flex-col items-center gap-4">
-      {/* 手機：以寬度撐滿、高度自動（不留上下空白）；桌機：以高度為準置中 */}
-      <svg
-        viewBox="-240 -175 700 530"
-        preserveAspectRatio="xMidYMid meet"
-        className="h-auto max-h-[80vh] w-full md:h-[74vh] md:w-auto"
-      >
-        <polygon points={rightWall} fill="var(--surface)" style={{ filter: "brightness(0.9)" }} />
-        <polygon points={leftWall} fill="var(--surface)" style={{ filter: "brightness(0.78)" }} />
-        <polygon points={floor} fill="var(--line)" style={{ filter: "brightness(0.72)" }} />
-        {/* 地板磁磚縫（畫在地板之後、家具之前，會被家具蓋住） */}
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((gx) => {
-          const a = pr(gx, 0, 0);
-          const b = pr(gx, ROOM_D, 0);
-          return <polyline key={`fx${gx}`} points={`${a.x},${a.y} ${b.x},${b.y}`} fill="none" stroke="#000" strokeOpacity={0.09} strokeWidth={1} />;
-        })}
-        {[1, 2, 3, 4].map((gy) => {
-          const a = pr(0, gy, 0);
-          const b = pr(ROOM_W, gy, 0);
-          return <polyline key={`fy${gy}`} points={`${a.x},${a.y} ${b.x},${b.y}`} fill="none" stroke="#000" strokeOpacity={0.09} strokeWidth={1} />;
-        })}
-        {pieces.map((p) => (
-          <g key={p.key}>{p.node}</g>
-        ))}
-      </svg>
+      {/* 房間 + 進場掃描線覆蓋層（aspect 固定，覆蓋層剛好對齊 SVG） */}
+      <div className="relative w-full max-w-[820px]" style={{ aspectRatio: "700 / 530" }}>
+        <svg viewBox="-240 -175 700 530" preserveAspectRatio="xMidYMid meet" className="block h-full w-full">
+          {/* 第 0 組：地板 + 兩面牆 + 磁磚縫 */}
+          <g style={{ opacity: revealed > 0 ? 1 : 0, transition: "opacity .18s ease" }}>
+            <polygon points={rightWall} fill="var(--surface)" style={{ filter: "brightness(0.9)" }} />
+            <polygon points={leftWall} fill="var(--surface)" style={{ filter: "brightness(0.78)" }} />
+            <polygon points={floor} fill="var(--line)" style={{ filter: "brightness(0.72)" }} />
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((gx) => {
+              const a = pr(gx, 0, 0);
+              const b = pr(gx, ROOM_D, 0);
+              return <polyline key={`fx${gx}`} points={`${a.x},${a.y} ${b.x},${b.y}`} fill="none" stroke="#000" strokeOpacity={0.09} strokeWidth={1} />;
+            })}
+            {[1, 2, 3, 4].map((gy) => {
+              const a = pr(0, gy, 0);
+              const b = pr(ROOM_W, gy, 0);
+              return <polyline key={`fy${gy}`} points={`${a.x},${a.y} ${b.x},${b.y}`} fill="none" stroke="#000" strokeOpacity={0.09} strokeWidth={1} />;
+            })}
+          </g>
+          {/* 家具依深度分 5 段，分別由第 1..5 條掃描線點亮 */}
+          {pieces.map((p, i) => {
+            const gi = 1 + Math.floor((i * 5) / pieces.length);
+            return (
+              <g key={p.key} style={{ opacity: revealed > gi ? 1 : 0, transition: "opacity .18s ease" }}>
+                {p.node}
+              </g>
+            );
+          })}
+        </svg>
+        <div ref={overlayRef} className="pointer-events-none absolute inset-0 overflow-hidden" />
+      </div>
 
       <div className="flex flex-wrap justify-center gap-2 font-mono text-xs tracking-wide text-muted">
         {HOTSPOT_ORDER.map((id) => (
