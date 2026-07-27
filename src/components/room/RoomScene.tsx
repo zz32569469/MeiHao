@@ -83,43 +83,40 @@ export default function RoomScene() {
   const isDark = useSyncExternalStore(themeSubscribe, themeSnapshot, themeServerSnapshot);
   const presence = useDiscordPresence();
 
-  // 進場：漸快的接力掃描線逐組點亮房間（revealed = 已點亮的組數 0..6）
-  const [revealed, setRevealed] = useState(0);
+  // 進場：一條漸快的掃描線，線上方逐漸顯示、線下方尚未顯示（clip 邊界跟著線走）
+  const clipRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
+    const clip = clipRef.current;
     const overlay = overlayRef.current;
-    if (!overlay) return;
-    const timers: number[] = [];
+    if (!clip || !overlay) return;
     const reduce = typeof matchMedia !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) {
-      timers.push(window.setTimeout(() => setRevealed(6), 0));
-      return () => timers.forEach(clearTimeout);
+      clip.style.clipPath = "none";
+      return;
     }
-    const durs = [520, 440, 380, 330, 290, 260]; // 漸快
-    let t = 0;
-    durs.forEach((dur, k) => {
-      timers.push(
-        window.setTimeout(() => {
-          const mover = document.createElement("div");
-          mover.style.cssText = "position:absolute;inset:0;";
-          const bar = document.createElement("div");
-          bar.style.cssText =
-            "position:absolute;left:0;right:0;top:0;height:3px;background:var(--accent-strong);box-shadow:0 0 16px 4px var(--accent-strong);";
-          mover.appendChild(bar);
-          overlay.appendChild(mover);
-          mover.animate(
-            [{ transform: "translateY(-4px)" }, { transform: "translateY(100%)" }],
-            { duration: dur, easing: "linear" },
-          );
-          timers.push(window.setTimeout(() => setRevealed((r) => Math.max(r, k + 1)), dur * 0.55));
-          timers.push(window.setTimeout(() => mover.remove(), dur + 80));
-        }, t),
-      );
-      t += dur * 0.86; // 上一條快到底時下一條才啟動
-    });
+    const dur = 1150;
+    const easing = "cubic-bezier(0.5, 0, 1, 0.5)"; // 漸快（慢起、越掃越快）
+    // 揭示範圍：從只露頂端一線 → 全部露出，邊界跟著掃描線同步
+    clip.animate(
+      [{ clipPath: "inset(0 0 100% 0)" }, { clipPath: "inset(0 0 0% 0)" }],
+      { duration: dur, easing, fill: "forwards" },
+    );
+    const mover = document.createElement("div");
+    mover.style.cssText = "position:absolute;inset:0;";
+    const bar = document.createElement("div");
+    bar.style.cssText =
+      "position:absolute;left:0;right:0;top:0;height:3px;background:var(--accent-strong);box-shadow:0 0 16px 4px var(--accent-strong);";
+    mover.appendChild(bar);
+    overlay.appendChild(mover);
+    const anim = mover.animate(
+      [{ transform: "translateY(0)" }, { transform: "translateY(100%)" }],
+      { duration: dur, easing, fill: "forwards" },
+    );
+    anim.onfinish = () => mover.remove();
     return () => {
-      timers.forEach(clearTimeout);
-      overlay.innerHTML = "";
+      anim.cancel();
+      mover.remove();
     };
   }, []);
 
@@ -540,11 +537,10 @@ export default function RoomScene() {
 
   return (
     <div className="flex w-full flex-col items-center gap-4">
-      {/* 房間 + 進場掃描線覆蓋層（aspect 固定，覆蓋層剛好對齊 SVG） */}
+      {/* 房間（clipRef 做進場揭示） + 掃描線覆蓋層（不被裁，騎在揭示邊界上） */}
       <div className="relative w-full max-w-[820px]" style={{ aspectRatio: "700 / 530" }}>
-        <svg viewBox="-240 -175 700 530" preserveAspectRatio="xMidYMid meet" className="block h-full w-full">
-          {/* 第 0 組：地板 + 兩面牆 + 磁磚縫 */}
-          <g style={{ opacity: revealed > 0 ? 1 : 0, transition: "opacity .18s ease" }}>
+        <div ref={clipRef} className="absolute inset-0" style={{ clipPath: "inset(0 0 100% 0)" }}>
+          <svg viewBox="-240 -175 700 530" preserveAspectRatio="xMidYMid meet" className="block h-full w-full">
             <polygon points={rightWall} fill="var(--surface)" style={{ filter: "brightness(0.9)" }} />
             <polygon points={leftWall} fill="var(--surface)" style={{ filter: "brightness(0.78)" }} />
             <polygon points={floor} fill="var(--line)" style={{ filter: "brightness(0.72)" }} />
@@ -558,17 +554,11 @@ export default function RoomScene() {
               const b = pr(ROOM_W, gy, 0);
               return <polyline key={`fy${gy}`} points={`${a.x},${a.y} ${b.x},${b.y}`} fill="none" stroke="#000" strokeOpacity={0.09} strokeWidth={1} />;
             })}
-          </g>
-          {/* 家具依深度分 5 段，分別由第 1..5 條掃描線點亮 */}
-          {pieces.map((p, i) => {
-            const gi = 1 + Math.floor((i * 5) / pieces.length);
-            return (
-              <g key={p.key} style={{ opacity: revealed > gi ? 1 : 0, transition: "opacity .18s ease" }}>
-                {p.node}
-              </g>
-            );
-          })}
-        </svg>
+            {pieces.map((p) => (
+              <g key={p.key}>{p.node}</g>
+            ))}
+          </svg>
+        </div>
         <div ref={overlayRef} className="pointer-events-none absolute inset-0 overflow-hidden" />
       </div>
 
