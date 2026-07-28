@@ -50,6 +50,21 @@ const HOBBY_ITEMS = [
   { name: "RG 紅異端", built: "2025", note: "" },
 ];
 
+const WORKS = [
+  {
+    title: "StoryEditor",
+    year: "2026",
+    tagline: "遊戲劇情／對話編輯器。編輯器跑在網頁，播放器在 Unity，兩端共用一份 .story.json。",
+    points: [
+      "分支選項、條件、變數的完整對話系統",
+      "文字特效用內嵌標記，網頁預覽與 Unity 共用同一份標籤定義",
+      "Excel 雙向同步，匯回時以三方合併處理衝突",
+    ],
+    demo: "https://zz32569469.github.io/StoryEditor/",
+    repo: "https://github.com/zz32569469/StoryEditor",
+  },
+];
+
 const WIP_ITEMS = [
   {
     title: "個人網站・房間導覽版",
@@ -726,7 +741,51 @@ export default function RoomScene() {
               </div>
             )}
 
-            {open === "works" && <GameShowcase />}
+            {open === "works" && (
+              <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-2">
+                  <h3 className="font-mono text-xs tracking-wide text-muted uppercase">作品</h3>
+                  <ul className="flex flex-col gap-4">
+                    {WORKS.map((work) => (
+                      <li key={work.title} className="border-2 border-line bg-bg p-4">
+                        <div className="flex items-baseline justify-between gap-2">
+                          <span className="font-bold text-ink">{work.title}</span>
+                          <span className="font-mono text-xs text-muted">{work.year}</span>
+                        </div>
+                        <p className="mt-1 text-sm text-muted">{work.tagline}</p>
+                        <ul className="mt-2 flex flex-col gap-1 text-sm text-muted">
+                          {work.points.map((point) => (
+                            <li key={point}>· {point}</li>
+                          ))}
+                        </ul>
+                        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 font-mono text-xs">
+                          <a
+                            href={work.demo}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-accent hover:text-accent-strong"
+                          >
+                            [ 線上使用 ]
+                          </a>
+                          <a
+                            href={work.repo}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-accent hover:text-accent-strong"
+                          >
+                            [ GITHUB ]
+                          </a>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <h3 className="font-mono text-xs tracking-wide text-muted uppercase">小遊戲</h3>
+                  <GameShowcase />
+                </div>
+              </div>
+            )}
 
             {open === "contact" && (
               <ul className="flex flex-col gap-2 font-mono text-sm">

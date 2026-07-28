@@ -19,15 +19,9 @@ export default function GameShowcase() {
 
   return (
     <article className="flex flex-col gap-4 border-2 border-line bg-surface p-5">
-      <span className="inline-flex w-fit items-center gap-2 border-2 border-accent px-2.5 py-1 font-mono text-xs tracking-wide text-accent uppercase before:h-1.5 before:w-1.5 before:bg-status before:content-['']">
-        STATUS · 製作中
-      </span>
-
       <div>
         <h3 className="font-serif font-bold text-ink">小遊戲試玩</h3>
-        <p className="mt-1 text-sm text-muted">
-          還沒有正式作品，先放三個自己刻的小遊戲練手，選一個玩玩看。
-        </p>
+        <p className="mt-1 text-sm text-muted">練手時自己刻的三個小遊戲，選一個玩玩看。</p>
       </div>
 
       <div className="flex flex-wrap gap-2">
